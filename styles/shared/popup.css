@@ -1,0 +1,35 @@
+.popup
+{
+   background-color: var(--color-error);
+
+   position: absolute;
+   top: 20px;
+   left: 20px;
+
+   max-width: 800px;
+   min-width: 200px;
+   width: 80vw;
+
+   border: none;
+   border-radius: 10px;
+
+   transition: all 400ms ease-in-out;
+   transform: scaleX(1) translateX(0);
+
+   opacity: 0.85;
+   padding: 30px;
+   box-sizing: border-box;
+
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+}
+.popup.hidden
+{
+   opacity: 0;
+   transform: scaleX(0.2) translateX(-100%);
+}
+.popup .title
+{
+   margin: 0;
+}

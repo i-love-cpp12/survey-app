@@ -1,0 +1,57 @@
+:root {
+  --color-bg: #0f172a;
+  --color-card: #020617;
+  --color-accent: #38bdf8;
+
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+
+  --color-text: #e5e7eb;
+  --color-text-subtle: #d6d6d6c7;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url("../../media/fonts/roboto/Roboto-Regular.ttf");
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url("../../media/fonts/roboto/Roboto-Light.ttf");
+    font-weight: 300;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url("../../media/fonts/roboto/Roboto-Bold.ttf");
+    font-weight: 900;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url("../../media/fonts/roboto/Roboto-Medium.ttf");
+    font-weight: 500;
+}
+
+body
+{
+    font-family: 'Roboto';
+    font-size: 15px;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+main.tile
+{
+    background-color: var(--color-card);
+    padding: 2rem;
+    border: 1px solid rgba(66, 66, 66, 0.541);
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+body.tile
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

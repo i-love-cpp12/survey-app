@@ -1,0 +1,39 @@
+input[type="text"],
+button, input[type='submit'], input[type='button'], a[role='button']
+{
+    border: none;
+    border-radius: 10px;
+}
+
+input[type="text"]::placeholder
+{
+    color: var(--color-text-subtle);
+}
+
+input[type="text"]
+{
+    background-color: rgba(129, 129, 129, 0.474);
+    color: var(--color-text);
+}
+
+input[type="text"]:focus
+{
+    outline: none;
+    box-shadow: inset 1px 1px 3px #40474976;
+    filter: brightness(1.2);
+    transition: all 200ms ease;
+    transform: scale(1.02);
+}
+
+button, input[type='submit'], input[type='button']
+{
+    font-family: 'Roboto';
+    cursor: pointer;
+    background-color: var(--color-accent);
+}
+
+a[role='button'], a[role='button']:visited, a[role='button']:active
+{
+    color: var(--color-text);
+    text-decoration: none;
+}

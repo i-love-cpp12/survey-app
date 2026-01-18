@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surveys</title>
+    <link rel="stylesheet" href="styles/shared/root.css">
+    <link rel="stylesheet" href="styles/pages/index.css">
+    <link rel="stylesheet" href="styles/shared/popup.css">
+    <link rel="stylesheet" href="styles/shared/input.css">
+</head>
+<body class="tile">
+    <main class="tile">
+        <header>
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M294.62-290h59.99v-260h-59.99v260ZM450-290h60v-380h-60v380Zm155.39 0h59.99v-140h-59.99v140ZM212.31-140Q182-140 161-161q-21-21-21-51.31v-535.38Q140-778 161-799q21-21 51.31-21h535.38Q778-820 799-799q21 21 21 51.31v535.38Q820-182 799-161q-21 21-51.31 21H212.31Zm0-60h535.38q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85ZM200-760v560-560Z"/></svg>
+            </div>
+            <h1 class="title">Real-Time-Surveys</h1>
+            <h4 class="subtitle">
+                Create or vote
+            </h4>
+        </header>
+        <section>
+            <div class="create-container">
+                <a href="pages/create.html" role="button">
+                    Create Survey
+                </a>
+            </div>
+            <div class="or">
+                <span>or</span>
+            </div>
+            <div class="enter-survey-code-container">
+                <form action="" method="get">
+                    <input type="text" maxlength="10" placeholder="enter survey code" aria-label="enter survey code input field" name="survey-code">
+                    <button type="submit" name="enter-code" aria-label="enter survey code submit button">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M665.08-450H180v-60h485.08L437.23-737.85 480-780l300 300-300 300-42.77-42.15L665.08-450Z"/></svg>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+    <div class="popup hidden" aria-hidden="true">
+        <h3 class="title">Survey not found</h3>
+        <div>No survey exists with that code. Check and try again.</div>
+    </div>
+    <script>
+        //debug
+        setTimeout(() => {
+            document.querySelector(".popup").classList.remove("hidden");
+        }, 100);
+    </script>
+</body>
+</html>
