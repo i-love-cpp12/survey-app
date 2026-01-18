@@ -46,9 +46,7 @@ section .create-container a
     border-radius: 10px;
 }
 section .create-container a[role='button']:focus,
-section .create-container a[role='button']:hover,
-section .enter-survey-code-container button:focus,
-section .enter-survey-code-container button:hover
+section .create-container a[role='button']:hover
 {
     outline: none;
     box-shadow: inset 1px 1px 3px #40474976;

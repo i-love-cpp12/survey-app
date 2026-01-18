@@ -16,7 +16,7 @@ input[type="text"]
     color: var(--color-text);
 }
 
-input[type="text"]:focus
+input[type="text"]:focus, button:focus, button:hover
 {
     outline: none;
     box-shadow: inset 1px 1px 3px #40474976;
