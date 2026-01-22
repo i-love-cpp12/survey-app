@@ -23,17 +23,22 @@
             <form id="create-survey-form">
                 <div class="question">
                     <div class="field-name">Question</div>
-                    <div>
+                    <div class="field-not-valid">
                         <input type="text" name="question" placeholder="What do you want to ask?">
+                        <div class="error-content">Some error message</div>
                     </div>
                 </div>
                 <div class="options">
                     <div class="field-name">Options</div>
-                    <div class="option">
-                        <input type="text" placeholder="Option 1" aria-label="Enter option 1">
-                    </div>
-                    <div class="option">
-                        <input type="text" placeholder="Option 2" aria-label="Enter option 2">
+                    <div class="option field-not-valid multiple-opt">
+                        <div>
+                            <input type="text" placeholder="Option 1" aria-label="Enter option 1" name="option">
+
+                            <button class="delete-opt" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/></svg>
+                            </button>
+                        </div>
+                        <div class="error-content">Some error message</div>
                     </div>
                 </div>
                 <div class="add-option-conatiner">

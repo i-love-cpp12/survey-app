@@ -37,3 +37,11 @@ a[role='button'], a[role='button']:visited, a[role='button']:active
     color: var(--color-text);
     text-decoration: none;
 }
+.clear-btn, .clear-btn:hover, .clear-btn:focus
+{
+    outline: none;
+    box-shadow: none;
+    filter: none;
+    transform: none;
+    background-color: transparent;
+}

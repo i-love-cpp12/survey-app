@@ -42,7 +42,58 @@ section .question
 {
     margin-bottom: 10px;
 }
-
+section .option
+{
+    margin-bottom: 15px;
+}
+section .field-not-valid input
+{
+    outline: 1px solid var(--color-error);
+    margin-bottom: 5px;
+}
+section .field-not-valid input:focus
+{
+    outline: 1px solid var(--color-error);
+}
+section .error-content
+{
+    display: none;
+}
+section .field-not-valid .error-content
+{
+    font-size: 0.9rem;
+    color: var(--color-error);
+    margin-bottom: 15px;
+    display: block;
+}
+section .options .option > div:first-child
+{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    width: 420px;
+}
+section .options button
+{
+    display: none;
+    height: 35px;
+    aspect-ratio: 1 / 1;
+    background-color: transparent;
+    padding: 0;
+}
+section .multiple-opt input
+{
+    margin-bottom: 0;
+    flex-grow: 1;
+}
+section .multiple-opt button
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 input[type="text"]
 {
     width: 400px;
