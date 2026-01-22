@@ -3,26 +3,7 @@ header nav
     display: flex;
     justify-content: start;
 }
-header nav a
-{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 3px 5px;
-    gap: 4px;
-    position: relative;
-    left: -10px;
-}
-header nav a svg
-{
-    fill: var(--color-text-subtle);
-    height: 22px;
-}
-header nav a span
-{
-    color: var(--color-text-subtle);
-    font-size: 1.04rem;
-}
+
 /* header h2
 {
     margin: 20px 0;

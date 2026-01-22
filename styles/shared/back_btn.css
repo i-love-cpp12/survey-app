@@ -1,0 +1,21 @@
+.back-btn
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 5px;
+    gap: 4px;
+    position: relative;
+    left: -10px;
+    color: var(--color-text-subtle);
+}
+.back-btn svg
+{
+    fill: var(--color-text-subtle);
+    height: 22px;
+}
+.back-btn a span
+{
+    color: var(--color-text-subtle);
+    font-size: 1.04rem;
+}
