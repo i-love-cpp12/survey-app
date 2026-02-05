@@ -30,7 +30,7 @@
                 <span>or</span>
             </div>
             <div class="enter-survey-code-container">
-                <form action="" method="get">
+                <form action="" method="get" class="js-enter-code-form">
                     <input type="text" maxlength="10" placeholder="enter survey code" aria-label="enter survey code input field" name="survey-code">
                     <button type="submit" name="enter-code" aria-label="enter survey code submit button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M665.08-450H180v-60h485.08L437.23-737.85 480-780l300 300-300 300-42.77-42.15L665.08-450Z"/></svg>
@@ -43,11 +43,12 @@
         <h3 class="title">Survey not found</h3>
         <div>No survey exists with that code. Check and try again.</div>
     </div>
+    <script src="scripts/dist/pages/index.js" type="module"></script>
     <script>
         //debug
-        setTimeout(() => {
-            document.querySelector(".popup").classList.remove("hidden");
-        }, 100);
+        // setTimeout(() => {
+        //     document.querySelector(".popup").classList.remove("hidden");
+        // }, 100);
     </script>
 </body>
 </html>
