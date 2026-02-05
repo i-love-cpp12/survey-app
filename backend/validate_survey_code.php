@@ -8,12 +8,16 @@ if($_SERVER["REQUEST_METHOD"] !== "POST")
 {
     respondWithError("Wrong request method: request method should be POST, {$_SERVER['REQUEST_METHOD']} has been given}", 405, ["isCodeOK" => false]);
 }
-if(!isset($_POST["code"]))
+$body = json_decode(file_get_contents("php://input"), true);
+// echo json_encode(["body" => $body]);
+// echo json_encode(["input" => file_get_contents("php://input")]);
+// exit();
+if(!isset($body["code"]))
 {
     respondWithError("Code must be given", 422, ["isCodeOK" => false]);
 }
 
-$code = $_POST["code"];
+$code = $body["code"];
 
 $dbinfo = require_once("dbinfo.php");
 $pdo = new PDO("mysql:host={$dbinfo['host']};dbname={$dbinfo['dbname']};charset=utf8", $dbinfo["user"], $dbinfo["password"], [

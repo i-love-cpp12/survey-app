@@ -8,11 +8,21 @@ formElem.addEventListener("submit", async (e) => {
 
     const code = formData.get("survey-code")?.toString() as string;
 
-    fetch("backend/validate_survey_code", {
+    const responce = await fetch("/survey/backend/validate_survey_code.php", {
         method: "POST",
         headers: {"Content-Type" : "application/json"},
         body: JSON.stringify(
             {code: code}
         )
     })
+    let data = undefined;
+    if(responce.ok)
+    {
+        data = await responce.json();
+    }
+
+    const isValid = data["error"] === "" && data["isCodeOk"] === true;
+    
+    console.log(data);
+    console.log(isValid);
 })
