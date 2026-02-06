@@ -1,8 +1,15 @@
 import { $ } from "../shared/selectors.js";
 
-const formElem = $(".js-enter-code-form") as HTMLFormElement 
-formElem.addEventListener("submit", async (e) => {
-    e.preventDefault();
+const paramCode: string | null = new URL(document.URL).searchParams.get("code");
+
+const formElem = $(".js-enter-code-form") as HTMLFormElement
+
+let popupSetTimeOutId: number | null = null;
+
+async function onFormSubmit(e: Event | null): Promise<void>
+{
+    if(e)
+        e.preventDefault();
 
     const formData = new FormData(formElem);
 
@@ -25,4 +32,30 @@ formElem.addEventListener("submit", async (e) => {
     
     console.log(data);
     console.log(isValid);
-})
+
+    if(isValid)
+    {
+        document.location.href = `/survey/pages/vote.html?code=${code}`;
+    }
+    else
+    {
+        const popupElem = $(".popup") as HTMLElement;
+        popupElem.classList.remove("hidden");
+
+        if (popupSetTimeOutId)
+            clearTimeout(popupSetTimeOutId);
+        
+        popupSetTimeOutId = setTimeout(() => {
+            popupElem.classList.add("hidden");
+            popupSetTimeOutId = null;
+        }, 5000)
+    }
+}
+
+if(paramCode)
+{
+    formElem["survey-code"].value = paramCode;
+    onFormSubmit(null);
+}
+
+formElem.addEventListener("submit", onFormSubmit)

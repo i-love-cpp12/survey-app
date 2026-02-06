@@ -1,7 +1,10 @@
 import { $ } from "../shared/selectors.js";
+const paramCode = new URL(document.URL).searchParams.get("code");
 const formElem = $(".js-enter-code-form");
-formElem.addEventListener("submit", async (e) => {
-    e.preventDefault();
+let popupSetTimeOutId = null;
+async function onFormSubmit(e) {
+    if (e)
+        e.preventDefault();
     const formData = new FormData(formElem);
     const code = formData.get("survey-code")?.toString();
     const responce = await fetch("/survey/backend/validate_survey_code.php", {
@@ -16,4 +19,22 @@ formElem.addEventListener("submit", async (e) => {
     const isValid = data["error"] === "" && data["isCodeOk"] === true;
     console.log(data);
     console.log(isValid);
-});
+    if (isValid) {
+        document.location.href = `/survey/pages/vote.html?code=${code}`;
+    }
+    else {
+        const popupElem = $(".popup");
+        popupElem.classList.remove("hidden");
+        if (popupSetTimeOutId)
+            clearTimeout(popupSetTimeOutId);
+        popupSetTimeOutId = setTimeout(() => {
+            popupElem.classList.add("hidden");
+            popupSetTimeOutId = null;
+        }, 5000);
+    }
+}
+if (paramCode) {
+    formElem["survey-code"].value = paramCode;
+    onFormSubmit(null);
+}
+formElem.addEventListener("submit", onFormSubmit);

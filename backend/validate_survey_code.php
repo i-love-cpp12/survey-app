@@ -3,15 +3,12 @@
 declare(strict_types=1);
 require_once("respond.php");
 
-// die("czesvasdsad");
 if($_SERVER["REQUEST_METHOD"] !== "POST")
 {
     respondWithError("Wrong request method: request method should be POST, {$_SERVER['REQUEST_METHOD']} has been given}", 405, ["isCodeOK" => false]);
 }
 $body = json_decode(file_get_contents("php://input"), true);
-// echo json_encode(["body" => $body]);
-// echo json_encode(["input" => file_get_contents("php://input")]);
-// exit();
+
 if(!isset($body["code"]))
 {
     respondWithError("Code must be given", 422, ["isCodeOK" => false]);
@@ -40,5 +37,4 @@ respond([
         "error" => "",
         "isCodeOk" => false
     ]);
-// echo(json_encode($data));
 exit();
