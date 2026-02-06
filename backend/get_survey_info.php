@@ -28,7 +28,7 @@ $pdo = null;
 
 if(!$stmt->rowCount())
 {
-    respondWithError("There is not an active survey with code: $code", 400, ["surveyInfo" => []]);
+    respond(["error" => "There is not an active survey with code: $code", "surveyInfo" => []], 200);
 }
 
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -44,10 +44,13 @@ foreach($data as $row)
 }
 
 $data = [
-    "survey_id" => $data[0]["survey_id"],
-    "survey_code" => $data[0]["survey_code"],
-    "question" => $data[0]["question"],
-    "options" => $options
+    "error" => "",
+    "surveyInfo" => [
+        "surveyId" => $data[0]["survey_id"],
+        "surveyCode" => $data[0]["survey_code"],
+        "question" => $data[0]["question"],
+        "options" => $options
+    ]
 ];
 
 respond($data);

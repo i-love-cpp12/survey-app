@@ -53,6 +53,7 @@ DROP TABLE IF EXISTS `survey`;
 CREATE TABLE `survey` (
   `survey_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `survey_code` varchar(25) NOT NULL,
+  `title` varchar(25) NOT NULL,
   `question` varchar(511) NOT NULL,
   `is_active` int(1) NOT NULL DEFAULT 1,
   `time_stamp` datetime DEFAULT current_timestamp(),
