@@ -1,4 +1,7 @@
 import { $ } from "../shared/selectors.js";
+import { copyIcon, copiedIcon } from "../data/icons.js";
+import { copyToClipboard } from "../shared/clipboard.js";
+let copyBtnSetTimeOutId = null;
 async function getSurveyInfo(code) {
     const responce = await fetch("/survey/backend/get_survey_info.php", {
         method: "POST",
@@ -41,5 +44,30 @@ async function init() {
         document.location.href = "/survey";
     surveyInfo = surveyInfo;
     renderSurvey(surveyInfo);
+    const copyBtnElem = $("button.copy");
+    copyBtnElem.addEventListener("click", async () => {
+        copyBtnElem.blur();
+        const sucess = await copyToClipboard(code.toUpperCase(), copyBtnElem);
+        if (!sucess) {
+            console.error("Copy unsucessful, try again or copy manualy");
+            return;
+        }
+        if (copyBtnSetTimeOutId)
+            clearTimeout(copyBtnSetTimeOutId);
+        copyBtnElem.classList.add("copied");
+        copyBtnElem.innerHTML =
+            `
+            ${copiedIcon}
+            <span>Copied!</span>
+        `;
+        copyBtnSetTimeOutId = setTimeout(() => {
+            copyBtnElem.classList.remove("copied");
+            copyBtnElem.innerHTML =
+                `
+                ${copyIcon}
+                <span>${code}</span>
+            `;
+        }, 1500);
+    });
 }
 init();

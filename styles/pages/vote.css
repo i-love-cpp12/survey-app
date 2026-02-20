@@ -27,9 +27,23 @@ button:focus
     font-size: 0.9rem;
     letter-spacing: 1px;
 }
+.copy:active
+{
+    outline: none !important;
+}
+.copy.copied
+{
+    background-color: var(--color-success) !important;
+    cursor: default;
+    text-transform: none;
+}
 .copy svg
 {
     height: 80%;
+}
+.copy.copied svg
+{
+    height: 100%;
 }
 section h2
 {
