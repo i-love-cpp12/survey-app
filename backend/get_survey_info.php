@@ -2,56 +2,37 @@
 
 declare(strict_types=1);
 require_once("respond.php");
+require_once("request.php");
+require_once("conn.php");
+require_once("survey.php");
 
-if($_SERVER["REQUEST_METHOD"] !== "POST")
-{
-    respondWithError("Wrong request method: request method should be POST, {$_SERVER['REQUEST_METHOD']} has been given}", 405, ["surveyInfo" => []]);
-}
-$body = json_decode(file_get_contents("php://input"), true);
+validateRequestMethod("POST");
+$body = getRequestBody();
 
 if(!isset($body["code"]))
 {
     respondWithError("Code must be given", 422, ["surveyInfo" => []]);
 }
 
-$code = $body["code"];
+$code = strtoupper($body["code"]);
 
-$dbinfo = require_once("dbinfo.php");
-$pdo = new PDO("mysql:host={$dbinfo['host']};dbname={$dbinfo['dbname']};charset=utf8", $dbinfo["user"], $dbinfo["password"], [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-]);
-
-$stmt = $pdo->prepare("SELECT s.survey_id as survey_id, s.survey_code as survey_code, s.question as question, o.option_id as option_id, o.value as option_value FROM survey as s JOIN option as o USING(survey_id) WHERE survey_code = :code AND is_active = 1");
-$stmt->execute(["code" => $code]);
+$pdo = createConnection();
+$survey = new Survey($code, $pdo);
 $pdo = null;
 
-if(!$stmt->rowCount())
-{
+if(!$survey->validateCode())
     respond(["error" => "There is not an active survey with code: $code", "surveyInfo" => []], 200);
-}
 
-$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$options = [];
-
-foreach($data as $row)
-{
-    $options[] = [
-        "id" => $row["option_id"],
-        "value" => $row["option_value"]
-    ];
-}
-
-$data = [
+$data = $survey->getData();
+$respondData = [
     "error" => "",
     "surveyInfo" => [
-        "surveyId" => $data[0]["survey_id"],
-        "surveyCode" => $data[0]["survey_code"],
-        "question" => $data[0]["question"],
-        "options" => $options
+        "surveyId" => $data["surveyId"],
+        "surveyCode" => $data["surveyCode"],
+        "question" => $data["question"],
+        "options" => $data["options"]
     ]
 ];
 
-respond($data);
+respond($respondData);
 exit();

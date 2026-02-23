@@ -33,7 +33,9 @@ export async function copyToClipboard(message: string, domElem: HTMLElement | nu
     catch(err)
     {
         console.error("Fallback method did'n work either. " + err);
+        toCopyFromElem.remove();
         return false;
     }
+    toCopyFromElem.remove();
     return true;
 }

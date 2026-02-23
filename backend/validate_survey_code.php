@@ -2,31 +2,29 @@
 
 declare(strict_types=1);
 require_once("respond.php");
+require_once("request.php");
+require_once("conn.php");
+require_once("survey.php");
 
-if($_SERVER["REQUEST_METHOD"] !== "POST")
-{
-    respondWithError("Wrong request method: request method should be POST, {$_SERVER['REQUEST_METHOD']} has been given}", 405, ["isCodeOK" => false]);
-}
-$body = json_decode(file_get_contents("php://input"), true);
+validateRequestMethod("POST");
 
-if(!isset($body["code"]))
-{
-    respondWithError("Code must be given", 422, ["isCodeOK" => false]);
-}
+$body = getRequestBody();
 
-$code = $body["code"];
+if(!$body || !isset($body["code"]))
+    respondWithError("Wrong body fromat. Should be JSON with code property", 422, ["isCodeOK" => false]);
 
-$dbinfo = require_once("dbinfo.php");
-$pdo = new PDO("mysql:host={$dbinfo['host']};dbname={$dbinfo['dbname']};charset=utf8", $dbinfo["user"], $dbinfo["password"], [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-]);
+$code = strtoupper($body["code"]);
 
-$stmt = $pdo->prepare("SELECT * FROM survey WHERE survey_code = :code AND is_active = 1;");
-$stmt->execute(["code" => $code]);
+$pdo = createConnection();
+
+$survey = new Survey($code, $pdo);
+
 $pdo = null;
 
-if($stmt->rowCount())
+$isCodeInDB = $survey->validateCode();
+
+
+if($isCodeInDB)
 {
     respond([
         "error" => "",
