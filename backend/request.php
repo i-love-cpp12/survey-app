@@ -7,7 +7,7 @@ function validateRequestMethod(string $method): void
     $method = strtoupper($method);
     if($_SERVER["REQUEST_METHOD"] !== $method)
     {
-        respondWithError("Wrong request method: request method should be $method, {$_SERVER['REQUEST_METHOD']} has been given}", 405, ["isCodeOK" => false]);
+        respondWithError("Wrong request method: request method should be $method, {$_SERVER['REQUEST_METHOD']} has been given}", 405);
     }
 }
 

@@ -6,10 +6,11 @@ class Survey
     private ?array $data = null;
     public function __construct(string $code, PDO $pdo)
     {
-        $stmt = $pdo->prepare("SELECT s.survey_id as survey_id, s.survey_code as survey_code, s.question as question, o.option_id as option_id, o.value as option_value FROM survey as s JOIN `option` as o USING(survey_id) WHERE survey_code = :code AND is_active = 1");
+        $stmt = $pdo->prepare("SELECT s.survey_id as survey_id, s.survey_code as survey_code, s.question as question, o.option_id as option_id, o.value as option_value FROM survey as s JOIN `option` as o USING(survey_id) WHERE survey_code LIKE :code AND is_active = 1");
         $stmt->execute(["code" => $code]);
 
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // respond(["code" => $code]);
         if(!$data)
             $this->isCodeValid = false;
         else
@@ -41,34 +42,29 @@ class Survey
         return $this->data;
     }
 
-    public function vote(int $optionId, string $userIp, PDO $pdo): bool
+    public function vote(int $optionId, string $userToken, PDO $pdo): bool
     {
-        if(!$this->isOptionFromSurvey($optionId) ||
-            !$this->validateIp($userIp) ||
-            $this->hasVoted($userIp, $pdo))
-                return false;
+        if(!$this->isOptionFromSurvey($optionId) || $this->hasVoted($userToken, $pdo))
+            return false;
 
-        $stmt = $pdo->prepare("INSERT INTO vote (user_ip, option_id) VALUES (:userIp, :optionId)");
-        $stmt->execute(["userIp" => $userIp, "optionId" => $optionId]);
+        $stmt = $pdo->prepare("INSERT INTO vote (user_token, option_id) VALUES (:userToken, :optionId)");
+        $stmt->execute(["userToken" => $userToken, "optionId" => $optionId]);
         return true;
     }
 
-    public function hasVoted(string $userIp, PDO $pdo): bool
+    public function hasVoted(string $userToken, PDO $pdo): bool
     {
-        $stmt = $pdo->prepare("SELECT s.survey_code FROM survey AS s JOIN `option` AS o USING(survey_id) JOIN vote AS v USING(option_id) WHERE v.user_ip = :ip AND s.survey_code = :code;");
-        $stmt->execute(["ip" => $userIp, "code" => $this->data["code"]]);
-
+        $stmt = $pdo->prepare("SELECT s.survey_code FROM survey AS s JOIN `option` AS o USING(survey_id) JOIN vote AS v USING(option_id) WHERE v.user_token = :token AND s.survey_code LIKE :code;");
+        $stmt->execute(["token" => $userToken, "code" => $this->data["surveyCode"]]);
         return $stmt->rowCount() === 1;
     }
 
     public function isOptionFromSurvey(int $optionId): bool
     {
-        return in_array($optionId, $this->data["options"]);
+        foreach($this->data["options"] as $option)
+        {
+            if ($option["id"] === $optionId) return true;
+        }
+        return false;
     }
-
-    private function validateIp(string $userIp): bool
-    {
-        return preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/", $userIp);
-    }
-    
 }

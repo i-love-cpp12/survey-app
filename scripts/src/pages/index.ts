@@ -58,4 +58,4 @@ if(paramCode)
     onFormSubmit(null);
 }
 
-formElem.addEventListener("submit", onFormSubmit)
+formElem.addEventListener("submit", onFormSubmit);

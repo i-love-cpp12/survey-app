@@ -82,7 +82,7 @@ DROP TABLE IF EXISTS `vote`;
 CREATE TABLE `vote` (
   `vote_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `option_id` int(10) unsigned NOT NULL,
-  `user_ip` varchar(50) NOT NULL,
+  `user_token` varchar(255) NOT NULL,
   `time_stamp` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`vote_id`),
   KEY `option_id_foreign_key` (`option_id`),
