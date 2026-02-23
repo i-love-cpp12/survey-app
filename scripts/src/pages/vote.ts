@@ -15,8 +15,6 @@ interface SurveyData
     options: Array<SurveyOption>
 }
 
-let copyBtnSetTimeOutId: number | null = null;
-
 async function getSurveyInfo(code: string): Promise<SurveyData | null>
 {
     const responce = await fetch("/survey/backend/get_survey_info.php", {
@@ -55,49 +53,49 @@ function renderSurvey(data: SurveyData)
         optionContainerElem.appendChild(optionElem);
     })
 }
-async function init(): Promise<void>
-{
-    let code: string | null = new URL(document.URL).searchParams.get("code");
 
-    console.log(code);
+let code: string | null = new URL(document.URL).searchParams.get("code");
 
-    if(!code) document.location.href = "/survey";
+console.log(code);
 
-    code = code as string;
+if(!code) document.location.href = "/survey";
 
-    let surveyInfo: SurveyData | null = await getSurveyInfo(code);
-    if(!surveyInfo)
-        document.location.href = "/survey";
-    surveyInfo = surveyInfo as SurveyData;
-    renderSurvey(surveyInfo);
+code = code as string;
 
-    const copyBtnElem: HTMLButtonElement = $("button.copy") as HTMLButtonElement;
-    copyBtnElem.addEventListener("click", async () => {
-        copyBtnElem.blur();
-        const sucess = await copyToClipboard(code.toUpperCase(), copyBtnElem);
-        if(!sucess)
-        {
-            console.error("Copy unsucessful, try again or copy manualy");
-            return;
-        }
-        if(copyBtnSetTimeOutId)
-            clearTimeout(copyBtnSetTimeOutId)
-        copyBtnElem.classList.add("copied");
+let surveyInfo: SurveyData | null = await getSurveyInfo(code);
+if(!surveyInfo)
+    document.location.href = "/survey";
+surveyInfo = surveyInfo as SurveyData;
+renderSurvey(surveyInfo);
+
+const copyBtnElem: HTMLButtonElement = $("button.copy") as HTMLButtonElement;
+let copyBtnSetTimeOutId: number | null = null;
+
+copyBtnElem.addEventListener("click", async () => {
+    copyBtnElem.blur();
+    const sucess = await copyToClipboard(code.toUpperCase(), copyBtnElem);
+    if(!sucess)
+    {
+        console.error("Copy unsucessful, try again or copy manualy");
+        return;
+    }
+    if(copyBtnSetTimeOutId)
+        clearTimeout(copyBtnSetTimeOutId)
+    copyBtnElem.classList.add("copied");
+    copyBtnElem.innerHTML =
+    `
+        ${copiedIcon}
+        <span>Copied!</span>
+    `;
+    copyBtnSetTimeOutId = setTimeout(() => {
+        copyBtnElem.classList.remove("copied");
         copyBtnElem.innerHTML =
         `
-            ${copiedIcon}
-            <span>Copied!</span>
+            ${copyIcon}
+            <span>${code}</span>
         `;
-        copyBtnSetTimeOutId = setTimeout(() => {
-            copyBtnElem.classList.remove("copied");
-            copyBtnElem.innerHTML =
-            `
-                ${copyIcon}
-                <span>${code}</span>
-            `;
-        }, 1500);
-    });
-}
+    }, 1500);
+});
 
-init();
+
 

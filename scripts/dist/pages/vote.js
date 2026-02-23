@@ -1,7 +1,6 @@
 import { $ } from "../shared/selectors.js";
 import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
-let copyBtnSetTimeOutId = null;
 async function getSurveyInfo(code) {
     const responce = await fetch("/survey/backend/get_survey_info.php", {
         method: "POST",
@@ -33,41 +32,39 @@ function renderSurvey(data) {
         optionContainerElem.appendChild(optionElem);
     });
 }
-async function init() {
-    let code = new URL(document.URL).searchParams.get("code");
-    console.log(code);
-    if (!code)
-        document.location.href = "/survey";
-    code = code;
-    let surveyInfo = await getSurveyInfo(code);
-    if (!surveyInfo)
-        document.location.href = "/survey";
-    surveyInfo = surveyInfo;
-    renderSurvey(surveyInfo);
-    const copyBtnElem = $("button.copy");
-    copyBtnElem.addEventListener("click", async () => {
-        copyBtnElem.blur();
-        const sucess = await copyToClipboard(code.toUpperCase(), copyBtnElem);
-        if (!sucess) {
-            console.error("Copy unsucessful, try again or copy manualy");
-            return;
-        }
-        if (copyBtnSetTimeOutId)
-            clearTimeout(copyBtnSetTimeOutId);
-        copyBtnElem.classList.add("copied");
+let code = new URL(document.URL).searchParams.get("code");
+console.log(code);
+if (!code)
+    document.location.href = "/survey";
+code = code;
+let surveyInfo = await getSurveyInfo(code);
+if (!surveyInfo)
+    document.location.href = "/survey";
+surveyInfo = surveyInfo;
+renderSurvey(surveyInfo);
+const copyBtnElem = $("button.copy");
+let copyBtnSetTimeOutId = null;
+copyBtnElem.addEventListener("click", async () => {
+    copyBtnElem.blur();
+    const sucess = await copyToClipboard(code.toUpperCase(), copyBtnElem);
+    if (!sucess) {
+        console.error("Copy unsucessful, try again or copy manualy");
+        return;
+    }
+    if (copyBtnSetTimeOutId)
+        clearTimeout(copyBtnSetTimeOutId);
+    copyBtnElem.classList.add("copied");
+    copyBtnElem.innerHTML =
+        `
+        ${copiedIcon}
+        <span>Copied!</span>
+    `;
+    copyBtnSetTimeOutId = setTimeout(() => {
+        copyBtnElem.classList.remove("copied");
         copyBtnElem.innerHTML =
             `
-            ${copiedIcon}
-            <span>Copied!</span>
+            ${copyIcon}
+            <span>${code}</span>
         `;
-        copyBtnSetTimeOutId = setTimeout(() => {
-            copyBtnElem.classList.remove("copied");
-            copyBtnElem.innerHTML =
-                `
-                ${copyIcon}
-                <span>${code}</span>
-            `;
-        }, 1500);
-    });
-}
-init();
+    }, 1500);
+});

@@ -24,7 +24,9 @@ export async function copyToClipboard(message, domElem = null) {
     }
     catch (err) {
         console.error("Fallback method did'n work either. " + err);
+        toCopyFromElem.remove();
         return false;
     }
+    toCopyFromElem.remove();
     return true;
 }
