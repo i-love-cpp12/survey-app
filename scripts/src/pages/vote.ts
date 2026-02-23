@@ -48,7 +48,7 @@ function renderSurvey(data: SurveyData)
         optionElem.classList.add("option");
         optionElem.innerHTML = 
         `
-            <button class="clear-btn">${optionData.value}</button>
+            <button class="clear-btn" data-option-id="${optionData.id}">${optionData.value}</button>
         `;
         optionContainerElem.appendChild(optionElem);
     })
