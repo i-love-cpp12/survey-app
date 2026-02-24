@@ -1,9 +1,14 @@
 import { $ } from "../shared/selectors.js";
+import { requestPOST, ResponseWithErrorField } from "../shared/request.js";
 
 interface PopupError
 {
     title: string,
     content: string
+}
+interface ValidateResponce extends ResponseWithErrorField
+{
+    isCodeOk: boolean,
 }
 
 const url = new URL(document.URL);
@@ -28,7 +33,7 @@ function popup(error: PopupError): void
 
     popupElem.classList.remove("hidden");
 
-    if (popupSetTimeOutId)
+    if (popupSetTimeOutId !== null)
         clearTimeout(popupSetTimeOutId);
     
     popupSetTimeOutId = setTimeout(() => {
@@ -42,30 +47,30 @@ async function onFormSubmit(e: Event | null): Promise<void>
     if(e)
         e.preventDefault();
 
-    const formData = new FormData(formElem);
-
-    const code = formData.get("survey-code")?.toString() as string;
-
-    const response = await fetch("/survey/backend/validate_survey_code.php", {
-        method: "POST",
-        headers: {"Content-Type" : "application/json"},
-        body: JSON.stringify(
-            {surveyCode: code}
-        )
-    })
-
-    const data = await response.json();
-    
-    const isValid = response.ok && data && data["error"] === "" && data["isCodeOk"] === true;
-    
-    isValid ? console.log(data) : console.error(data);
-    console.log("is valid:", isValid);
-
-    if(isValid)
+    try
     {
-        document.location.href = `/survey/pages/vote.html?code=${code}`;
+        const formData = new FormData(formElem);
+
+        const code = formData.get("survey-code")?.toString() ?? "";
+        
+        const data: ValidateResponce | null =
+            await requestPOST<ValidateResponce>("/survey/backend/validate_survey_code.php", {surveyCode: code})
+        
+        const isValid = data && data.error === "" && data.isCodeOk;
+        
+        isValid ? console.log(data) : console.error(data);
+        console.log("is valid:", isValid);
+
+        if(isValid)
+        {
+            document.location.href = `/survey/pages/vote.html?code=${encodeURIComponent(code)}`;
+        }
+        else popup({title: "Survey not found", content: "No survey exists with that code. Check and try again."});
     }
-    else popup({title: "Survey not found", content: "No survey exists with that code. Check and try again."} as PopupError)
+    catch(err)
+    {
+        popup({title: "Server Error", content: "Something went wrong. Please try again later."} as PopupError);
+    }
 }
 
 if(paramCode)

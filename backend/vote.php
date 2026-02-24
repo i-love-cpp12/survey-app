@@ -35,7 +35,7 @@ if (!($token = setToken($pdo)))
 $survey = new Survey($body["surveyCode"], $pdo);
 
 if(!$survey->validateCode() || !$survey->vote($body["optionId"], $token, $pdo))
-    respondWithError("Vote atempt was unsuccesful", 400, ["voted" => false]);
+    respondWithError("Vote atempt was unsuccesful", 200, ["voted" => false]);
 $pdo = null;
 respond(["error" => "", "voted" => true]);
 

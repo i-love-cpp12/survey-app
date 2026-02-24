@@ -19,7 +19,7 @@ $survey = new Survey($code, $pdo);
 $pdo = null;
 
 if(!$survey->validateCode())
-    respond(["error" => "There is not an active survey with code: $code", "surveyInfo" => []], 200);
+    respondWithError("There is not an active survey with code: $code", 200, ["surveyInfo" => []]);
 
 $data = $survey->getData();
 $respondData = [
