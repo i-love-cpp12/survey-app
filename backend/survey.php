@@ -10,7 +10,6 @@ class Survey
         $stmt->execute(["code" => $code]);
 
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        // respond(["code" => $code]);
         if(!$data)
             $this->isCodeValid = false;
         else
@@ -46,7 +45,6 @@ class Survey
     {
         if(!$this->isOptionFromSurvey($optionId) || $this->hasVoted($userToken, $pdo))
             return false;
-
         $stmt = $pdo->prepare("INSERT INTO vote (user_token, option_id) VALUES (:userToken, :optionId)");
         $stmt->execute(["userToken" => $userToken, "optionId" => $optionId]);
         return true;

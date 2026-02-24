@@ -12,7 +12,10 @@ validateRequestMethod("POST");
 $body = getRequestBody();
 
 if(!$body || !isset($body["surveyCode"]) || !isset($body["optionId"]))
-    respondWithError("Wrong body fromat. Should be JSON with code property", 422, ["voted" => false]);
+    respondWithError("Wrong body fromat. Should be JSON with surveyCode and optionId property", 422, ["voted" => false]);
+
+$body["surveyCode"] = strtoupper($body["surveyCode"]);
+$body["optionId"] = is_numeric($body["optionId"]) ? $body["optionId"] : intval($body["optionId"]);
 
 $pdo = createConnection();
 $token = "";
@@ -21,9 +24,6 @@ if (!($token = setToken($pdo)))
     $pdo = null;
     respondWithError("Unable to asign token", 500, ["voted" => false]);
 }
-
-$body["surveyCode"] = strtoupper($body["surveyCode"]);
-$body["optionId"] = intval($body["optionId"]);
 
 $survey = new Survey($body["surveyCode"], $pdo);
 
