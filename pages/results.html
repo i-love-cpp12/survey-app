@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/shared/root.css">
     <link rel="stylesheet" href="../styles/shared/input.css">
     <link rel="stylesheet" href="../styles/shared/back_btn.css">
+    <link rel="stylesheet" href="../styles/pages/results.css">
 </head>
 <body class="tile">
     <main class="tile">
@@ -16,16 +17,44 @@
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m294.92-450 227.85 227.85L480-180 180-480l300-300 42.77 42.15L294.92-510H780v60H294.92Z"/></svg>
                     <span>Back</span>
                 </a>
-                <div>
-                    <button class="clear-btn copy">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#e3e3e3"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>
-                        <span>code not working</span>
-                    </button>
-                </div>
             </nav>
         </header>
         <section>
-            cos
+            <h2>Survey name</h2>
+            <div class="options">
+                <div class="option">
+                    <div>
+                        <h3>Option1 name</h3>
+                        <span>100%</span>
+                    </div>
+                    <div class="progress-bar">
+
+                    </div>
+                    <div class="vote-count"><span>1</span> vote</div>
+                </div>
+                <div class="option">
+                    <div>
+                        <h3>Option2 name</h3>
+                        <span>0%</span>
+                    </div>
+                    <div class="progress-bar">
+
+                    </div>
+                    <div class="vote-count"><span>0</span> votes</div>
+                </div>
+            </div>
+
+            <div class="line"></div>
+
+            <div class="updates">
+                <svg height="10" width="10">
+                    <circle cx="5" cy="5" r="4" stroke="black" stroke-width="0" fill="red" />
+                </svg>
+                <span>Live updates every: <span>2</span>s</span>
+            </div>
+            <div class="total-votes">
+                Total votes: <span>1</span>
+            </div>
         </section>
     </main>
 </body>
