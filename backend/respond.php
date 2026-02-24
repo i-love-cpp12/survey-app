@@ -25,3 +25,15 @@ function respond(array $responceData = [], int $httpResponseCode = 200): never
     echo json_encode($responceData);
     die();
 }
+//Wrong body fromat. Should be JSON with (string)surveyCode property
+function getErrorMessageWrongBodyJSON(array $params): string
+{
+    $paramsStr = "";
+
+    foreach($params as $name => $type)
+    {
+        $paramsStr .= "($type) $name, ";
+    }
+    $paramsStr = substr($paramsStr, 0, strlen($paramsStr) - 2);
+    return "Wrong body fromat. Should be JSON with $paramsStr " . (count($params) > 1 ? "properties" : "property");
+}

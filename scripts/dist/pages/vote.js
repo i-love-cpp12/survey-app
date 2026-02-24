@@ -2,18 +2,18 @@ import { $ } from "../shared/selectors.js";
 import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
 async function getSurveyInfo(code) {
-    const responce = await fetch("/survey/backend/get_survey_info.php", {
+    const response = await fetch("/survey/backend/get_survey_info.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ "code": code })
+        body: JSON.stringify({ surveyCode: code })
     });
-    if (!responce.ok)
+    if (!response.ok)
         return null;
-    const data = await responce.json();
+    const data = await response.json();
     console.log(data);
-    if (data["error"] !== "" || !data["surveyInfo"])
+    if (!data || data["error"] !== "" || !data["surveyInfo"])
         return null;
     return data["surveyInfo"];
 }
@@ -32,21 +32,10 @@ function renderSurvey(data) {
         optionContainerElem.appendChild(optionElem);
     });
 }
-let code = new URL(document.URL).searchParams.get("code");
-console.log(code);
-if (!code)
-    document.location.href = "/survey";
-code = code;
-let surveyInfo = await getSurveyInfo(code);
-if (!surveyInfo)
-    document.location.href = "/survey";
-surveyInfo = surveyInfo;
-renderSurvey(surveyInfo);
-const copyBtnElem = $("button.copy");
-let copyBtnSetTimeOutId = null;
-copyBtnElem.addEventListener("click", async () => {
+async function onCopy(surveyCode) {
+    surveyCode = surveyCode;
     copyBtnElem.blur();
-    const sucess = await copyToClipboard(code.toUpperCase(), copyBtnElem);
+    const sucess = await copyToClipboard(surveyCode.toUpperCase(), copyBtnElem);
     if (!sucess) {
         console.error("Copy unsucessful, try again or copy manualy");
         return;
@@ -64,7 +53,68 @@ copyBtnElem.addEventListener("click", async () => {
         copyBtnElem.innerHTML =
             `
             ${copyIcon}
-            <span>${code}</span>
+            <span>${surveyCode}</span>
         `;
     }, 1500);
+}
+async function vote(optionId, surveyCode) {
+    const response = await fetch("/survey/backend/vote.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            surveyCode: surveyCode,
+            optionId: optionId
+        })
+    });
+    const data = await response.json();
+    console.log(data);
+    if (!data || data["error"] !== "" || !data["voted"])
+        return false;
+    return data["voted"];
+}
+async function hasVoted(surveyCode) {
+    const response = await fetch("/survey/backend/has_voted.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            surveyCode: surveyCode,
+        })
+    });
+    const data = await response.json();
+    console.log(data);
+    if (!response.ok || !data || data["error"] !== "")
+        return null;
+    return data["hasVoted"];
+}
+let code = new URL(document.URL).searchParams.get("code");
+console.log(code);
+if (!code)
+    document.location.href = "/survey";
+code = code;
+const voted = await hasVoted(code);
+if (voted === null)
+    location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
+if (voted === true)
+    location.href = `/survey/pages/results.html?code=${code}`;
+let surveyInfo = await getSurveyInfo(code);
+if (!surveyInfo)
+    document.location.href = "/survey";
+surveyInfo = surveyInfo;
+renderSurvey(surveyInfo);
+const copyBtnElem = $("button.copy");
+let copyBtnSetTimeOutId = null;
+copyBtnElem.addEventListener("click", async () => { await onCopy(code); });
+const chooseOptionConatinerElem = $(".js-choose-option-container");
+const optionButtonElems = chooseOptionConatinerElem.querySelectorAll("button");
+optionButtonElems.forEach((btn) => {
+    const optionId = parseInt(btn.getAttribute("data-option-id"));
+    btn.addEventListener("click", async () => {
+        if (!await vote(optionId, code))
+            location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
+        location.href = `/survey/pages/results.html?code=${code}`;
+    });
 });

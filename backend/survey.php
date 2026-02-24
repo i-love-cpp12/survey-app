@@ -1,5 +1,4 @@
 <?php
-require_once("conn.php");
 class Survey
 {
     private bool $isCodeValid = true;

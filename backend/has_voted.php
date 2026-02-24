@@ -1,38 +1,26 @@
 <?php
-
 declare(strict_types=1);
-require_once("respond.php");
 require_once("request.php");
+require_once("token.php");
 require_once("conn.php");
 require_once("survey.php");
 
 validateRequestMethod("POST");
 
 $body = getRequestBody();
-
+if(!isset($_COOKIE["token"]))
+{
+    $pdo = createConnection();
+    setToken($pdo);
+    $pdo = null;
+    respond(["error" => "", "hasVoted" => false]);
+}
 if(!$body || !isset($body["surveyCode"]) || !is_string($body["surveyCode"]))
     respondWithError(getErrorMessageWrongBodyJSON(["surveyCode" => "string"]), 422, ["isCodeOK" => false]);
 
-$code = strtoupper($body["surveyCode"]);
-
 $pdo = createConnection();
-
-$survey = new Survey($code, $pdo);
-
+$survey = new Survey($body["surveyCode"], $pdo);
+$hasVoted = $survey->hasVoted($_COOKIE["token"], $pdo);
 $pdo = null;
 
-$isCodeInDB = $survey->validateCode();
-
-
-if($isCodeInDB)
-{
-    respond([
-        "error" => "",
-        "isCodeOk" => true
-    ]);
-}
-respond([
-        "error" => "",
-        "isCodeOk" => false
-    ]);
-exit();
+respond(["error" => "", "hasVoted" => $hasVoted]);

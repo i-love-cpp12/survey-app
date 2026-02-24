@@ -9,12 +9,10 @@ require_once("survey.php");
 validateRequestMethod("POST");
 $body = getRequestBody();
 
-if(!isset($body["code"]))
-{
-    respondWithError("Code must be given", 422, ["surveyInfo" => []]);
-}
+if(!$body || !isset($body["surveyCode"]) || !is_string($body["surveyCode"]))
+    respondWithError(getErrorMessageWrongBodyJSON(["surveyCode" => "string"]), 422, ["surveyInfo" => []]);
 
-$code = strtoupper($body["code"]);
+$code = strtoupper($body["surveyCode"]);
 
 $pdo = createConnection();
 $survey = new Survey($code, $pdo);
