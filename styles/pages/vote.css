@@ -1,9 +1,3 @@
-nav
-{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 button
 {
     background-color: rgba(149, 149, 155, 0.195) !important;
@@ -13,37 +7,11 @@ button:focus
 {
     outline: 1.5px solid var(--color-accent) !important;
 }
-.copy
+nav
 {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 7px 13px;
-    height: 35px;
-    border-radius: 10px;
-    border: none;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-}
-.copy:active
-{
-    outline: none !important;
-}
-.copy.copied
-{
-    background-color: var(--color-success) !important;
-    cursor: default;
-    text-transform: none;
-}
-.copy svg
-{
-    height: 80%;
-}
-.copy.copied svg
-{
-    height: 100%;
+    align-items: center;
 }
 section h2
 {

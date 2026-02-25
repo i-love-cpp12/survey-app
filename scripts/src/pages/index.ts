@@ -11,22 +11,6 @@ interface ValidateResponce extends ResponseWithErrorField
     isCodeOk: boolean,
 }
 
-const url = new URL(document.URL);
-
-const paramCode: string | null = url.searchParams.get("code");
-const paramErrorTitle: string | null = url.searchParams.get("error-title");
-const paramErrorConent: string | null = url.searchParams.get("error-content");
-
-if(paramErrorTitle !== null) url.searchParams.delete("error-title");
-if(paramErrorConent !== null) url.searchParams.delete("error-content");
-
-window.history.replaceState({}, "", url);
-
-const poupError: PopupError | null =
-    paramErrorTitle && paramErrorConent ? {title: paramErrorTitle, content: paramErrorConent} as PopupError : null;
-
-const formElem = $(".js-enter-code-form") as HTMLFormElement
-
 const showPopup = (() => {
     let popupSetTimeOutId: number | null = null;
     
@@ -49,7 +33,7 @@ const showPopup = (() => {
     };
 })();
 
-async function onFormSubmit(e: Event | null): Promise<void>
+async function onFormSubmit(e: Event | null, formElem: HTMLFormElement): Promise<void>
 {
     if(e)
         e.preventDefault();
@@ -63,6 +47,8 @@ async function onFormSubmit(e: Event | null): Promise<void>
         const data: ValidateResponce | null =
             await requestPOST<ValidateResponce>("/survey/backend/validate_survey_code.php", {surveyCode: code})
         
+        if(data === null) throw new Error("Server error");
+
         const isValid = data && data.error === "" && data.isCodeOk;
         
         isValid ? console.log(data) : console.error(data);
@@ -80,13 +66,38 @@ async function onFormSubmit(e: Event | null): Promise<void>
     }
 }
 
-if(paramCode)
+function setFromEventListener(): void
 {
-    formElem["survey-code"].value = paramCode;
-    onFormSubmit(null);
+    const formElem = $(".js-enter-code-form") as HTMLFormElement
+    formElem.addEventListener("submit", (e: Event) => {onFormSubmit(e, formElem)});
 }
-if(poupError)
-    showPopup(poupError)
 
+async function init(): Promise<void>
+{
+    const url = new URL(document.URL);
+    
+    const paramCode: string | null = url.searchParams.get("code");
+    const paramErrorTitle: string | null = url.searchParams.get("error-title");
+    const paramErrorConent: string | null = url.searchParams.get("error-content");
+    
+    if(paramErrorTitle !== null) url.searchParams.delete("error-title");
+    if(paramErrorConent !== null) url.searchParams.delete("error-content");
+    
+    window.history.replaceState({}, "", url);
+    
+    const poupError: PopupError | null =
+        paramErrorTitle && paramErrorConent ? {title: paramErrorTitle, content: paramErrorConent} as PopupError : null;
+        
+    if(paramCode)
+    {
+        const formElem = $(".js-enter-code-form") as HTMLFormElement
+        formElem["survey-code"].value = paramCode;
+        onFormSubmit(null, formElem);
+    }
+    if(poupError)
+        showPopup(poupError)
 
-formElem.addEventListener("submit", onFormSubmit);
+    setFromEventListener();
+}
+
+await init();
