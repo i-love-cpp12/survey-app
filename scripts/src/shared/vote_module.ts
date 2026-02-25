@@ -3,19 +3,20 @@ import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
 import { requestPOST, ResponseWithErrorField } from "../shared/request.js";
 
-interface SurveyOption
+export interface SurveyOption
 {
     id: number,
-    value: string
+    value: string,
+    votesCount: number
 }
-interface SurveyData
+export interface SurveyData
 {
     surveyId: number,
     surveyCode: string,
     question: string,
     options: Array<SurveyOption>
 }
-interface GetSurveyInfoResponse extends ResponseWithErrorField
+export interface GetSurveyInfoResponse extends ResponseWithErrorField
 {
     surveyInfo: SurveyData,
 }
@@ -28,7 +29,7 @@ interface HasVotedResponse extends ResponseWithErrorField
     hasVoted: boolean,
 }
 
-async function getSurveyInfo(code: string): Promise<SurveyData | null>
+export async function getSurveyInfo(code: string): Promise<SurveyData | null>
 {
     const data: GetSurveyInfoResponse | null =
         await requestPOST<GetSurveyInfoResponse>("/survey/backend/get_survey_info.php", {surveyCode: code});
@@ -55,7 +56,7 @@ async function hasVoted(surveyCode: string): Promise<boolean | null>
     return data.hasVoted;
 }
 
-function renderSurvey(data: SurveyData)
+function render(data: SurveyData)
 {
     ($("header .copy span") as HTMLElement).innerText = data.surveyCode;
     ($("section > h2") as HTMLElement).innerText = data.question;
@@ -150,7 +151,7 @@ export async function init(): Promise<void>
         location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
     if(voted === true) location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
 
-    renderSurvey(surveyInfo);
+    render(surveyInfo);
 
     setCopyBtnEventListener(code);
 

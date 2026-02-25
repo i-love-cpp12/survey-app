@@ -57,7 +57,7 @@
                 <svg height="10" width="10">
                     <circle cx="5" cy="5" r="4" stroke="black" stroke-width="0"/>
                 </svg>
-                <span>Live updates every: <span>2</span>s</span>
+                Live updates every: <span>2</span>s
             </div>
             <div class="total-votes">
                 Total votes: <span>1</span>
@@ -65,13 +65,5 @@
         </section>
     </main>
     <script src="../scripts/dist/pages/results.js" type="module"></script>
-    <script>
-        setTimeout(() => {
-            document.querySelectorAll(".progress-bar .bar")
-                .forEach((progressBar) => {
-                    progressBar.style = `transform: translateX(-${progressBar.getAttribute("data-procent")}%)`;
-                })
-        }, 100);
-    </script>
 </body>
 </html>

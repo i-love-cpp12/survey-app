@@ -2,7 +2,7 @@ import { $ } from "../shared/selectors.js";
 import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
 import { requestPOST } from "../shared/request.js";
-async function getSurveyInfo(code) {
+export async function getSurveyInfo(code) {
     const data = await requestPOST("/survey/backend/get_survey_info.php", { surveyCode: code });
     if (!data || data.error !== "")
         return null;
@@ -23,7 +23,7 @@ async function hasVoted(surveyCode) {
         return null;
     return data.hasVoted;
 }
-function renderSurvey(data) {
+function render(data) {
     $("header .copy span").innerText = data.surveyCode;
     $("section > h2").innerText = data.question;
     const optionContainerElem = $("section .options");
@@ -99,7 +99,7 @@ export async function init() {
         location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
     if (voted === true)
         location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
-    renderSurvey(surveyInfo);
+    render(surveyInfo);
     setCopyBtnEventListener(code);
     setOptionsEventListener(code);
 }

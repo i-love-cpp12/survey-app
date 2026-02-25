@@ -3,6 +3,11 @@ button
     background-color: rgba(149, 149, 155, 0.195) !important;
     color: var(--color-text);
 }
+main.tile
+{
+    min-width: 500px;
+    max-width: 700px;
+}
 nav
 {
     display: flex;
@@ -30,14 +35,17 @@ section .options
     display: flex;
     flex-direction: column;
     gap: 20px;
+    overflow-y: auto;
+    max-height: 40vh;
+    padding-right: 5px;
 }
 
 section .options .option
 {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    min-width: 500px;
+    gap: 7px;
+    width: 100%;
 }
 
 section .options .option .option-name
@@ -50,6 +58,7 @@ section .options .option div:first-child
 {
     display: flex;
     justify-content: space-between;
+    align-items: end;
 }
 
 section .progress-bar
