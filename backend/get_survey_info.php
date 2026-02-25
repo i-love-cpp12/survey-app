@@ -12,7 +12,7 @@ $body = getRequestBody();
 if(!$body || !isset($body["surveyCode"]) || !is_string($body["surveyCode"]))
     respondWithError(getErrorMessageWrongBodyJSON(["surveyCode" => "string"]), 422, ["surveyInfo" => []]);
 
-$code = strtoupper($body["surveyCode"]);
+$code = $body["surveyCode"];
 
 $pdo = createConnection();
 $survey = new Survey($code, $pdo);

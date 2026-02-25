@@ -21,9 +21,6 @@ if(
     respondWithError(getErrorMessageWrongBodyJSON(["surveyCode" => "string", "optionId" => "int"]), 422, ["voted" => false]);
 }
 
-$body["surveyCode"] = strtoupper($body["surveyCode"]);
-$body["optionId"] = is_numeric($body["optionId"]) ? $body["optionId"] : intval($body["optionId"]);
-
 $pdo = createConnection();
 $token = "";
 if (!($token = setToken($pdo)))
