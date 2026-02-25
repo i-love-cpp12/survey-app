@@ -84,7 +84,7 @@ async function onCopy(surveyCode: string): Promise<void>
 async function vote(optionId: number, surveyCode: string): Promise<boolean>
 {
     const data: VoteResponse | null =
-        await requestPOST<VoteResponse>("/survey/backend/vote.php", {
+        await requestPOST<VoteResponse>("/survey/backend/votessss.php", {
                 surveyCode: surveyCode,
                 optionId: optionId
         });
@@ -108,15 +108,17 @@ if(!code) document.location.href = "/survey";
 
 code = code as string;
 
-const voted = await hasVoted(code);
-if(voted === null)
-    location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
-if(voted === true) location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
 
 let surveyInfo: SurveyData | null = await getSurveyInfo(code);
 if(!surveyInfo)
     document.location.href = "/survey/index.html?error-title=Something went wrong while loading survey data&error-content=Try again later or try other survey";
 surveyInfo = surveyInfo as SurveyData;
+
+const voted = await hasVoted(code);
+if(voted === null)
+    location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
+if(voted === true) location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
+
 renderSurvey(surveyInfo);
 
 const copyBtnElem: HTMLButtonElement = $("button.copy") as HTMLButtonElement;
@@ -135,8 +137,10 @@ optionButtonElems.forEach((btn) => {
         if(!await vote(optionId, code))
         {
             location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
-            return;
         }
-        location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
+        else
+        {
+            location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
+        }
     })
 })

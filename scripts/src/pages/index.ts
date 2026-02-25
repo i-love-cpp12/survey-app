@@ -17,30 +17,37 @@ const paramCode: string | null = url.searchParams.get("code");
 const paramErrorTitle: string | null = url.searchParams.get("error-title");
 const paramErrorConent: string | null = url.searchParams.get("error-content");
 
+if(paramErrorTitle !== null) url.searchParams.delete("error-title");
+if(paramErrorConent !== null) url.searchParams.delete("error-content");
+
+window.history.replaceState({}, "", url);
+
 const poupError: PopupError | null =
     paramErrorTitle && paramErrorConent ? {title: paramErrorTitle, content: paramErrorConent} as PopupError : null;
 
 const formElem = $(".js-enter-code-form") as HTMLFormElement
 
-let popupSetTimeOutId: number | null = null;
-
-function popup(error: PopupError): void
-{
-    const popupElem = $(".popup") as HTMLElement;
-
-    (popupElem.querySelector(".title") as HTMLElement).innerText = error.title;
-    (popupElem.querySelector("div") as HTMLElement).innerText = error.content;
-
-    popupElem.classList.remove("hidden");
-
-    if (popupSetTimeOutId !== null)
-        clearTimeout(popupSetTimeOutId);
+const showPopup = (() => {
+    let popupSetTimeOutId: number | null = null;
     
-    popupSetTimeOutId = setTimeout(() => {
-        popupElem.classList.add("hidden");
-        popupSetTimeOutId = null;
-    }, 5000)
-}
+    return (error: PopupError): void =>
+    {
+        const popupElem = $(".popup") as HTMLElement;
+
+        (popupElem.querySelector(".title") as HTMLElement).innerText = error.title;
+        (popupElem.querySelector("div") as HTMLElement).innerText = error.content;
+
+        popupElem.classList.remove("hidden");
+
+        if (popupSetTimeOutId !== null)
+            clearTimeout(popupSetTimeOutId);
+        
+        popupSetTimeOutId = setTimeout(() => {
+            popupElem.classList.add("hidden");
+            popupSetTimeOutId = null;
+        }, 5000);
+    };
+})();
 
 async function onFormSubmit(e: Event | null): Promise<void>
 {
@@ -65,11 +72,11 @@ async function onFormSubmit(e: Event | null): Promise<void>
         {
             document.location.href = `/survey/pages/vote.html?code=${encodeURIComponent(code)}`;
         }
-        else popup({title: "Survey not found", content: "No survey exists with that code. Check and try again."});
+        else showPopup({title: "Survey not found", content: "No survey exists with that code. Check and try again."});
     }
     catch(err)
     {
-        popup({title: "Server Error", content: "Something went wrong. Please try again later."} as PopupError);
+        showPopup({title: "Server Error", content: "Something went wrong. Please try again later."} as PopupError);
     }
 }
 
@@ -79,7 +86,7 @@ if(paramCode)
     onFormSubmit(null);
 }
 if(poupError)
-    popup(poupError)
+    showPopup(poupError)
 
 
 formElem.addEventListener("submit", onFormSubmit);

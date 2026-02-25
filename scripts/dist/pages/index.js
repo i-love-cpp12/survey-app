@@ -4,21 +4,28 @@ const url = new URL(document.URL);
 const paramCode = url.searchParams.get("code");
 const paramErrorTitle = url.searchParams.get("error-title");
 const paramErrorConent = url.searchParams.get("error-content");
+if (paramErrorTitle !== null)
+    url.searchParams.delete("error-title");
+if (paramErrorConent !== null)
+    url.searchParams.delete("error-content");
+window.history.replaceState({}, "", url);
 const poupError = paramErrorTitle && paramErrorConent ? { title: paramErrorTitle, content: paramErrorConent } : null;
 const formElem = $(".js-enter-code-form");
-let popupSetTimeOutId = null;
-function popup(error) {
-    const popupElem = $(".popup");
-    popupElem.querySelector(".title").innerText = error.title;
-    popupElem.querySelector("div").innerText = error.content;
-    popupElem.classList.remove("hidden");
-    if (popupSetTimeOutId !== null)
-        clearTimeout(popupSetTimeOutId);
-    popupSetTimeOutId = setTimeout(() => {
-        popupElem.classList.add("hidden");
-        popupSetTimeOutId = null;
-    }, 5000);
-}
+const showPopup = (() => {
+    let popupSetTimeOutId = null;
+    return (error) => {
+        const popupElem = $(".popup");
+        popupElem.querySelector(".title").innerText = error.title;
+        popupElem.querySelector("div").innerText = error.content;
+        popupElem.classList.remove("hidden");
+        if (popupSetTimeOutId !== null)
+            clearTimeout(popupSetTimeOutId);
+        popupSetTimeOutId = setTimeout(() => {
+            popupElem.classList.add("hidden");
+            popupSetTimeOutId = null;
+        }, 5000);
+    };
+})();
 async function onFormSubmit(e) {
     if (e)
         e.preventDefault();
@@ -33,10 +40,10 @@ async function onFormSubmit(e) {
             document.location.href = `/survey/pages/vote.html?code=${encodeURIComponent(code)}`;
         }
         else
-            popup({ title: "Survey not found", content: "No survey exists with that code. Check and try again." });
+            showPopup({ title: "Survey not found", content: "No survey exists with that code. Check and try again." });
     }
     catch (err) {
-        popup({ title: "Server Error", content: "Something went wrong. Please try again later." });
+        showPopup({ title: "Server Error", content: "Something went wrong. Please try again later." });
     }
 }
 if (paramCode) {
@@ -44,5 +51,5 @@ if (paramCode) {
     onFormSubmit(null);
 }
 if (poupError)
-    popup(poupError);
+    showPopup(poupError);
 formElem.addEventListener("submit", onFormSubmit);
