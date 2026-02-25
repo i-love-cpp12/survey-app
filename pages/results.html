@@ -27,27 +27,27 @@
             </nav>
         </header>
         <section>
-            <h2>Survey name</h2>
+            <h2 class="title">Survey name</h2>
             <div class="options">
                 <div class="option">
                     <div>
-                        <h3>Option1 name</h3>
+                        <h3 class="option-name">Option1 name</h3>
                         <span>100%</span>
                     </div>
                     <div class="progress-bar">
-
+                        <div class="bar" data-procent="50"></div>
                     </div>
-                    <div class="vote-count"><span>1</span> vote</div>
+                    <div><span>1</span> vote</div>
                 </div>
                 <div class="option">
                     <div>
-                        <h3>Option2 name</h3>
+                        <h3 class="option-name">Option2 name</h3>
                         <span>0%</span>
                     </div>
                     <div class="progress-bar">
-
+                        <div class="bar" data-procent="70"></div>
                     </div>
-                    <div class="vote-count"><span>0</span> votes</div>
+                    <div><span>0</span> votes</div>
                 </div>
             </div>
 
@@ -55,7 +55,7 @@
 
             <div class="updates">
                 <svg height="10" width="10">
-                    <circle cx="5" cy="5" r="4" stroke="black" stroke-width="0" fill="red" />
+                    <circle cx="5" cy="5" r="4" stroke="black" stroke-width="0"/>
                 </svg>
                 <span>Live updates every: <span>2</span>s</span>
             </div>
@@ -65,5 +65,13 @@
         </section>
     </main>
     <script src="../scripts/dist/pages/results.js" type="module"></script>
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll(".progress-bar .bar")
+                .forEach((progressBar) => {
+                    progressBar.style = `transform: translateX(-${progressBar.getAttribute("data-procent")}%)`;
+                })
+        }, 100);
+    </script>
 </body>
 </html>

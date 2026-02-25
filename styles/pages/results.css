@@ -9,3 +9,89 @@ nav
     justify-content: space-between;
     align-items: center;
 }
+section
+{
+    color: var(--color-text-subtle);
+    font-size: 0.85rem;
+}
+
+section .title, section h3
+{
+    color: var(--color-text);
+}
+
+section .title
+{
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+section .options
+{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+section .options .option
+{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 500px;
+}
+
+section .options .option .option-name
+{
+    font-size: 0.93rem;
+    margin: 0;
+    font-weight: 500;
+}
+section .options .option div:first-child
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+section .progress-bar
+{
+    height: 12px;
+    width: 100%;
+    background-color: var(--color-text-subtle);
+    border-radius: 100vw;
+    position: relative;
+    overflow: hidden;
+}
+section .progress-bar .bar
+{
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 100vw;
+    border: none;
+    background-color: var(--color-accent);
+    transition: all 500ms ease-out;
+    transform: translateX(calc(-100%));
+}
+
+section .line
+{
+    margin-block: 25px;
+    height: 1px;
+    background-color: var(--color-text-subtle);
+    opacity: 0.3;
+}
+section .updates
+{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+section .updates svg
+{
+    fill: var(--color-success);
+}

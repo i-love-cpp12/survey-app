@@ -7,7 +7,7 @@
     gap: 4px;
     position: relative;
     left: -10px;
-    color: var(--color-text-subtle);
+    color: var(--color-text-subtle) !important;
 }
 .back-btn svg
 {

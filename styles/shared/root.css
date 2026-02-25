@@ -7,7 +7,7 @@
   --color-error: #ef4444;
 
   --color-text: #e5e7eb;
-  --color-text-subtle: #d6d6d6c7;
+  --color-text-subtle: #a9a9a9c7;
 }
 @font-face {
     font-family: 'Roboto';
@@ -69,3 +69,4 @@ body.tile
     background-color: var(--color-bg);
     border-radius: 10px;
 }
+
