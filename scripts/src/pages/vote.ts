@@ -51,7 +51,7 @@ function renderSurvey(data: SurveyData)
             <button class="clear-btn" data-option-id="${optionData.id}">${optionData.value}</button>
         `;
         optionContainerElem.appendChild(optionElem);
-    })
+    });
 }
 async function onCopy(surveyCode: string): Promise<void>
 {
@@ -84,7 +84,7 @@ async function onCopy(surveyCode: string): Promise<void>
 async function vote(optionId: number, surveyCode: string): Promise<boolean>
 {
     const data: VoteResponse | null =
-        await requestPOST<VoteResponse>("/survey/backend/votessss.php", {
+        await requestPOST<VoteResponse>("/survey/backend/vote.php", {
                 surveyCode: surveyCode,
                 optionId: optionId
         });

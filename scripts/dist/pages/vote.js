@@ -49,7 +49,7 @@ async function onCopy(surveyCode) {
     }, 1500);
 }
 async function vote(optionId, surveyCode) {
-    const data = await requestPOST("/survey/backend/votessss.php", {
+    const data = await requestPOST("/survey/backend/vote.php", {
         surveyCode: surveyCode,
         optionId: optionId
     });
