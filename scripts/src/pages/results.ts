@@ -1,6 +1,7 @@
-import { $, $$} from "../shared/selectors.js";
+import { $, $$ } from "../shared/selectors.js";
 import { setCopyBtnEventListener, getSurveyInfo, SurveyOption, SurveyData, GetSurveyInfoResponse }
     from "../shared/vote_module.js";
+import { setIntervalStartNoDelay } from "../shared/set_interval.js";
 //add refresh, add code reading from url params 
 function render(surveyData: SurveyData, refreshRateMS: number = 200): void
 {
