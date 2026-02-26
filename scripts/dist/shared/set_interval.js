@@ -1,4 +1,4 @@
-export function setIntervalStartNoDelay(callback, timeMS) {
+export function setIntervalNoDelay(callback, timeMS) {
     callback();
     return setInterval(callback, timeMS);
 }

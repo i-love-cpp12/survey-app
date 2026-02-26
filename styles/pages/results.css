@@ -81,7 +81,7 @@ section .progress-bar .bar
     border-radius: 100vw;
     border: none;
     background-color: var(--color-accent);
-    transition: all 500ms ease-out;
+    transition: all 700ms cubic-bezier(0, 0, 0.21, 1.41);
     transform: translateX(calc(-100%));
 }
 

@@ -1,9 +1,9 @@
 import { $, $$ } from "../shared/selectors.js";
-import { setCopyBtnEventListener, getSurveyInfo, SurveyOption, SurveyData, GetSurveyInfoResponse }
+import { setCopyBtnEventListener, getSurveyInfo, SurveyOption, SurveyData, surveyDataEqualOpperator }
     from "../shared/vote_module.js";
-import { setIntervalStartNoDelay } from "../shared/set_interval.js";
+import { setIntervalNoDelay } from "../shared/set_interval.js";
 //add refresh, add code reading from url params 
-function render(surveyData: SurveyData, refreshRateMS: number = 200): void
+function render(surveyData: SurveyData, refreshRateMS: number = 2000): void
 {
     ($("header nav button.copy span") as HTMLElement).innerText = surveyData.surveyCode; 
     ($("section .title") as HTMLElement).innerText = surveyData.question;
@@ -34,7 +34,7 @@ function render(surveyData: SurveyData, refreshRateMS: number = 200): void
 
             optionContainerElem.append(optionElem);
         });
-    ($("section .updates span") as HTMLElement).innerText = String(refreshRateMS / 100);
+    ($("section .updates span") as HTMLElement).innerText = String(refreshRateMS / 1000);
     ($("section .total-votes span") as HTMLElement).innerText = String(totalVoteCount);
 }
 
@@ -47,22 +47,40 @@ function setProgressBars(): void
             })
     }, 200);
 }
+const refresh = (() => {
+    let surveyDataOld: SurveyData | null = null;
 
+    return async (surveyCode: string, refreshRateMS: number) => {
+        const surveyData = await getSurveyInfo(surveyCode);
 
-async function init(): Promise<void>
+        if(surveyData === null)
+        {
+            location.href = "/survey/index.html?error-title=Something went wrong while resiving results&error-content=Try again later or try other survey";
+            return;
+        }
+
+        if(surveyDataOld !== null && surveyDataEqualOpperator(surveyData, surveyDataOld)) return;
+
+        render(surveyData, refreshRateMS);
+
+        setProgressBars();
+
+        surveyDataOld = {...surveyData} as SurveyData;
+    }
+})();
+
+async function init(refreshRateMS: number): Promise<void>
 {
-    const surveyCode = "ABCDE";
-    setCopyBtnEventListener(surveyCode);
-    const surveyData: SurveyData | null = await getSurveyInfo(surveyCode);
-
-    if(surveyData === null)
+    const url = new URL(document.URL);
+    const surveyCode: string | null = url.searchParams.get("code");
+    if(!surveyCode)
     {
         location.href = "/survey/index.html?error-title=Something went wrong while resiving results&error-content=Try again later or try other survey";
         return;
     }
-
-    render(surveyData);
-
-    setProgressBars();
+    setIntervalNoDelay(() => {
+        refresh(surveyCode, refreshRateMS);
+    }, refreshRateMS);
+    setCopyBtnEventListener(surveyCode);
 }
-await init();
+await init(5000);

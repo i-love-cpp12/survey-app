@@ -1,5 +1,5 @@
 type Callback = () => void;
-export function setIntervalStartNoDelay(callback: Callback, timeMS: number): number
+export function setIntervalNoDelay(callback: Callback, timeMS: number): number
 {
     callback();
     return setInterval(callback, timeMS);

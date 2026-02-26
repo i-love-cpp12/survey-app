@@ -2,6 +2,22 @@ import { $ } from "../shared/selectors.js";
 import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
 import { requestPOST } from "../shared/request.js";
+export function surveyOptionEqualOpperator(o1, o2) {
+    return o1.id === o2.id && o1.value === o2.value && o1.votesCount === o2.votesCount;
+}
+export function surveyDataEqualOpperator(s1, s2) {
+    if (s1.surveyId !== s2.surveyId || s1.surveyCode !== s2.surveyCode || s1.question !== s2.question)
+        return false;
+    for (let i = 0; i < s1.options.length || i < s2.options.length; i++) {
+        const s1Option = s1.options[i];
+        const s2Option = s2.options[i];
+        if (!s1Option || !s2Option)
+            console.log("s1 or s2 is null");
+        if (!s1Option || !s2Option || !surveyOptionEqualOpperator(s1Option, s2Option))
+            return false;
+    }
+    return true;
+}
 export async function getSurveyInfo(code) {
     const data = await requestPOST("/survey/backend/get_survey_info.php", { surveyCode: code });
     if (!data || data.error !== "")

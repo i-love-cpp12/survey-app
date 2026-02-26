@@ -28,7 +28,25 @@ interface HasVotedResponse extends ResponseWithErrorField
 {
     hasVoted: boolean,
 }
+export function surveyOptionEqualOpperator(o1: SurveyOption, o2: SurveyOption): boolean
+{
+    return o1.id === o2.id && o1.value === o2.value && o1.votesCount === o2.votesCount;
+}
+export function surveyDataEqualOpperator(s1: SurveyData, s2: SurveyData): boolean
+{
+    if(s1.surveyId !== s2.surveyId || s1.surveyCode !== s2.surveyCode || s1.question !== s2.question) return false;
 
+    for(let i = 0; i < s1.options.length || i < s2.options.length; i++)
+    {
+        const s1Option = s1.options[i];
+        const s2Option = s2.options[i];
+
+        if(!s1Option || !s2Option) console.log("s1 or s2 is null");
+        if(!s1Option || !s2Option || !surveyOptionEqualOpperator(s1Option, s2Option)) return false;
+
+    }
+    return true;
+}
 export async function getSurveyInfo(code: string): Promise<SurveyData | null>
 {
     const data: GetSurveyInfoResponse | null =
