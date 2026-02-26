@@ -5,7 +5,7 @@ class Survey
     private ?array $data = null;
     public function __construct(string $code, PDO $pdo)
     {
-        $stmt = $pdo->prepare("SELECT s.survey_id as survey_id, s.survey_code as survey_code, s.question as question, o.option_id as option_id, o.value as option_value, v.vote_id as vote_id FROM survey as s JOIN `option` as o USING(survey_id) LEFT JOIN vote as v USING(option_id) WHERE UPPER(survey_code) = UPPER(:code) AND is_active = 1 ORDER BY o.option_id;");
+        $stmt = $pdo->prepare("SELECT s.survey_id as survey_id, s.survey_code as survey_code, s.question as question, o.option_id as option_id, o.value as option_value, COUNT(v.vote_id) as votes_count FROM survey as s JOIN `option` as o USING(survey_id) LEFT JOIN vote as v USING(option_id) WHERE UPPER(survey_code) = UPPER(:code) AND is_active = 1 GROUP BY o.option_id ORDER BY o.option_id;");
         $stmt->execute(["code" => $code]);
 
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -14,27 +14,13 @@ class Survey
         else
         {
             $options = [];
-            $idIndexMap = [];
-            $lastId = null;
-            foreach($data as $i => $row)
+            foreach($data as $row)
             {
-                if($lastId === null || $lastId !== $row["option_id"])
-                {
-                    $options[] = [
-                        "id" => $row["option_id"],
-                        "value" => $row["option_value"],
-                        "votesCount" => 0
-                    ];
-
-                    $idIndexMap[$row["option_id"]] = count($options) - 1;
-                }
-
-                
-                if($row["vote_id"])
-                {
-                    $options[$idIndexMap[$row["option_id"]]]["votesCount"]++;
-                }
-                $lastId = $row["option_id"];
+                $options[] = [
+                    "id" => $row["option_id"],
+                    "value" => $row["option_value"],
+                    "votesCount" => $row["votes_count"]
+                ];
             }
 
             $this->data = [
