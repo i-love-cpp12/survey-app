@@ -1,5 +1,6 @@
 import { $, $$ } from "../shared/selectors.js";
-
+import { requestPOST } from "../shared/request.js";
+import {SurveyData, GetSurveyInfoResponse } from "../shared/vote_module";
 interface FormCreateSurveyData
 {
     question: string,
@@ -68,7 +69,15 @@ async function onFormSubmit(e: Event, formElem: HTMLFormElement): Promise<void>
 
     const formData: FormCreateSurveyData = {question: questionElem.value, options: Array.from(optionElems).map((o) => o.value)};
 
-    console.log(formData);
+    const surveyData: GetSurveyInfoResponse | null = await requestPOST<GetSurveyInfoResponse>("/survey/backend/create_survey.php", formData);
+
+    if(!surveyData)
+    {
+        location.href = "/survey/index.html?error-title=Something went wrong while creating survey&error-content=Try again later";
+        return;
+    }
+
+    location.href = `/survey/pages/vote.html?code=${encodeURIComponent(surveyData.surveyInfo.surveyCode)}`;
 }
 
 function refreshOptions(): void

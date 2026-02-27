@@ -1,4 +1,5 @@
 import { $ } from "../shared/selectors.js";
+import { requestPOST } from "../shared/request.js";
 function clearErrorsMsgInForm(question, options) {
     question.nextElementSibling.innerText = "";
     question?.parentElement?.classList.remove("field-not-valid");
@@ -43,7 +44,12 @@ async function onFormSubmit(e, formElem) {
     if (!isValid)
         return;
     const formData = { question: questionElem.value, options: Array.from(optionElems).map((o) => o.value) };
-    console.log(formData);
+    const surveyData = await requestPOST("/survey/backend/create_survey.php", formData);
+    if (!surveyData) {
+        location.href = "/survey/index.html?error-title=Something went wrong while creating survey&error-content=Try again later";
+        return;
+    }
+    location.href = `/survey/pages/vote.html?code=${encodeURIComponent(surveyData.surveyInfo.surveyCode)}`;
 }
 function refreshOptions() {
     const optionConatiner = $(".options");
