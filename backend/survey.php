@@ -7,12 +7,11 @@ class Survey
     private static string $codeChars = "qwertyuiopasdfghjklzxcvbnm1234567890";
     public static function createSurvey(string $question, array $options, PDO $pdo): Survey | null
     {
-        //check
-        $surveyCode = Survey::generateSurveyCode($pdo, 8);
+        $surveyCode = Survey::generateSurveyCode($pdo, 7);
         if(strlen($surveyCode) < 4 || $question === "" || count($options) < 2) return null;
         foreach($options as $option)
         {
-            if($option === "") return null;  
+            if(!is_string($option) || $option === "") return null;  
         }
 
         $stmt = $pdo->prepare("INSERT INTO survey(survey_code, question) VALUES (:surveyCode, :question);");
@@ -27,12 +26,12 @@ class Survey
         }
         return new Survey($surveyCode, $pdo);
     }
-    private static function generateSurveyCode(PDO $pdo, int $lenght = 8, int $maxTryesCount = 10): string
+    private static function generateSurveyCode(PDO $pdo, int $lenght = 7, int $maxTryesCount = 10): string
     {
         $result = null;
-        for($i = 0; ($result === null || $pdo->query("SELECT survey_id FROM survey WHERE UPPER(survey_code) = UPPER('$result');")->rowCount() !== 0); $i++)
+        for($attempts = 0; ($result === null || $pdo->query("SELECT 1 FROM survey WHERE UPPER(survey_code) = UPPER('$result');")->rowCount() !== 0); $attempts++)
         {
-            if($i >= $maxTryesCount) return "";
+            if($attempts >= $maxTryesCount) return "";
             for($i = 0; $i < $lenght; ++$i)
             {
                 $result .= strtoupper(Survey::$codeChars[random_int(0, strlen(Survey::$codeChars) - 1)]); 
@@ -90,9 +89,9 @@ class Survey
 
     public function hasVoted(string $userToken, PDO $pdo): bool
     {        
-        $stmt = $pdo->prepare("SELECT s.survey_code FROM survey AS s JOIN `option` AS o USING(survey_id) JOIN vote AS v USING(option_id) WHERE v.user_token = :token AND s.survey_code LIKE :code;");
+        $stmt = $pdo->prepare("SELECT s.survey_code FROM survey AS s JOIN `option` AS o USING(survey_id) JOIN vote AS v USING(option_id) WHERE v.user_token = :token AND UPPER(s.survey_code) = UPPER(:code);");
         $stmt->execute(["token" => $userToken, "code" => $this->data["surveyCode"]]);
-        return $stmt->rowCount() === 1;
+        return $stmt->rowCount() > 0;
     }
 
     public function isOptionFromSurvey(int $optionId): bool
