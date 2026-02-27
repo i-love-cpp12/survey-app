@@ -1,6 +1,9 @@
 import { $, $$ } from "../shared/selectors.js";
 import { requestPOST } from "../shared/request.js";
-import {SurveyData, GetSurveyInfoResponse } from "../shared/vote_module";
+import {SurveyData, GetSurveyInfoResponse } from "../shared/vote_module.js";
+import { copyToClipboard } from "../shared/clipboard.js";
+
+
 interface FormCreateSurveyData
 {
     question: string,
@@ -76,7 +79,7 @@ async function onFormSubmit(e: Event, formElem: HTMLFormElement): Promise<void>
         location.href = "/survey/index.html?error-title=Something went wrong while creating survey&error-content=Try again later";
         return;
     }
-
+    await copyToClipboard(surveyData.surveyInfo.surveyCode, questionElem);
     location.href = `/survey/pages/vote.html?code=${encodeURIComponent(surveyData.surveyInfo.surveyCode)}`;
 }
 

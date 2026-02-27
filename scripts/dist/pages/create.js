@@ -1,5 +1,6 @@
 import { $ } from "../shared/selectors.js";
 import { requestPOST } from "../shared/request.js";
+import { copyToClipboard } from "../shared/clipboard.js";
 function clearErrorsMsgInForm(question, options) {
     question.nextElementSibling.innerText = "";
     question?.parentElement?.classList.remove("field-not-valid");
@@ -49,6 +50,7 @@ async function onFormSubmit(e, formElem) {
         location.href = "/survey/index.html?error-title=Something went wrong while creating survey&error-content=Try again later";
         return;
     }
+    await copyToClipboard(surveyData.surveyInfo.surveyCode, questionElem);
     location.href = `/survey/pages/vote.html?code=${encodeURIComponent(surveyData.surveyInfo.surveyCode)}`;
 }
 function refreshOptions() {

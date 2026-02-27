@@ -2,7 +2,7 @@ import { $, $$ } from "../shared/selectors.js";
 import { setCopyBtnEventListener, getSurveyInfo, SurveyOption, SurveyData, surveyDataEqualOpperator }
     from "../shared/vote_module.js";
 import { setIntervalNoDelay } from "../shared/set_interval.js";
-//add refresh, add code reading from url params 
+//add code reading from url params 
 function render(surveyData: SurveyData, refreshRateMS: number = 2000): void
 {
     ($("header nav button.copy span") as HTMLElement).innerText = surveyData.surveyCode; 
@@ -29,7 +29,7 @@ function render(surveyData: SurveyData, refreshRateMS: number = 2000): void
                 <div class="progress-bar">
                     <div class="bar" data-procent="${procent}"></div>
                 </div>
-                <div><span>${option.votesCount}</span> vote</div>
+                <div><span>${option.votesCount}</span> ${option.votesCount === 1 ? "vote" : "votes"}</div>
             `;
 
             optionContainerElem.append(optionElem);
