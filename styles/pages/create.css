@@ -4,10 +4,6 @@ header nav
     justify-content: start;
 }
 
-/* header h2
-{
-    margin: 20px 0;
-} */
 section
 {
     box-sizing: border-box;
@@ -18,14 +14,19 @@ section .field-name
     font-weight: 900;
     margin-bottom: 10px;
 }
-
+section .scrollable
+{
+    max-height: 54vh;
+    overflow: visible;
+    overflow-y: auto;
+}
 section .question
 {
     margin-bottom: 10px;
 }
-section .option
+section .question, section .option
 {
-    margin-bottom: 15px;
+    padding-inline: 5px 8px;
 }
 section .field-not-valid input
 {
@@ -44,7 +45,7 @@ section .field-not-valid .error-content
 {
     font-size: 0.9rem;
     color: var(--color-error);
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     display: block;
 }
 section .options .option > div:first-child
@@ -53,7 +54,7 @@ section .options .option > div:first-child
     align-items: center;
     gap: 10px;
     box-sizing: border-box;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
     width: 420px;
 }
 section .options button
@@ -66,7 +67,7 @@ section .options button
 }
 section .multiple-opt input
 {
-    margin-bottom: 0;
+    /* margin-bottom: 0; */
     flex-grow: 1;
 }
 section .multiple-opt button
@@ -80,7 +81,7 @@ input[type="text"]
     width: 400px;
     padding: 0 10px;
     height: 50px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 input[type="text"], input[type="text"]::placeholder
 {
