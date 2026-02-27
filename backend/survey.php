@@ -13,16 +13,25 @@ class Survey
         {
             if(!is_string($option) || $option === "") return null;  
         }
-
-        $stmt = $pdo->prepare("INSERT INTO survey(survey_code, question) VALUES (:surveyCode, :question);");
-        $stmt->execute(["surveyCode" => $surveyCode, "question" => $question]);
-
-        $surveyId = intval($pdo->lastInsertId());
-
-        foreach($options as $option)
+        $pdo->beginTransaction();
+        try
         {
-            $stmt = $pdo->prepare("INSERT INTO option(survey_id, `value`) VALUES (:surveyId, :optionValue);");
-            $stmt->execute(["surveyId" => $surveyId, "optionValue" => $option]);
+            $stmt = $pdo->prepare("INSERT INTO survey(survey_code, question) VALUES (:surveyCode, :question);");
+            $stmt->execute(["surveyCode" => $surveyCode, "question" => $question]);
+    
+            $surveyId = intval($pdo->lastInsertId());
+    
+            foreach($options as $option)
+            {
+                $stmt = $pdo->prepare("INSERT INTO option(survey_id, `value`) VALUES (:surveyId, :optionValue);");
+                $stmt->execute(["surveyId" => $surveyId, "optionValue" => $option]);
+            }
+            $pdo->commit();
+        }
+        catch(Throwable $err)
+        {
+            $pdo->rollBack();
+            return null;
         }
         return new Survey($surveyCode, $pdo);
     }

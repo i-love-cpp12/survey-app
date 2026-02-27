@@ -30,9 +30,9 @@ foreach($body["options"] as $option)
 }
 
 $pdo = createConnection();
-$surveyData = Survey::createSurvey($body["question"], $body["options"], $pdo);
+$survey = Survey::createSurvey($body["question"], $body["options"], $pdo);
 $pdo = null;
-if(!$surveyData)
+if(!$survey || !$survey->validateCode())
     respondWithError("Something went wrong while creating survey", 200, ["surveyInfo" => []]);
 
-respond(["error" => "", "surveyInfo" => $surveyData]);
+respond(["error" => "", "surveyInfo" => $survey->getData()]);
