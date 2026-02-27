@@ -1,6 +1,7 @@
 import { $, $$ } from "../shared/selectors.js";
 import { setCopyBtnEventListener, getSurveyInfo, surveyDataEqualOpperator } from "../shared/vote_module.js";
 import { setIntervalNoDelay } from "../shared/set_interval.js";
+import { goTo } from "../shared/link.js";
 //add code reading from url params 
 function render(surveyData, refreshRateMS = 2000) {
     $("header nav button.copy span").innerText = surveyData.surveyCode;
@@ -45,7 +46,7 @@ const refresh = (() => {
     return async (surveyCode, refreshRateMS) => {
         const surveyData = await getSurveyInfo(surveyCode);
         if (surveyData === null) {
-            location.href = "/survey/index.html?error-title=Something went wrong while resiving results&error-content=Try again later or try other survey";
+            goTo("index.html", { "error-title": "Something went wrong while resiving results", "error-content": "Try again later or try other survey" });
             return;
         }
         if (surveyDataOld !== null && surveyDataEqualOpperator(surveyData, surveyDataOld))
@@ -59,7 +60,7 @@ async function init(refreshRateMS) {
     const url = new URL(document.URL);
     const surveyCode = url.searchParams.get("code");
     if (!surveyCode) {
-        location.href = "/survey/index.html?error-title=Something went wrong while resiving results&error-content=Try again later or try other survey";
+        goTo("index.html", { "error-title": "Something went wrong while resiving results", "error-content": "Try again later or try other survey" });
         return;
     }
     setIntervalNoDelay(() => {

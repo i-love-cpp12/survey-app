@@ -2,6 +2,7 @@ import { $ } from "../shared/selectors.js";
 import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
 import { requestPOST, ResponseWithErrorField } from "../shared/request.js";
+import { goTo, homeDir } from "./link.js";
 
 export interface SurveyOption
 {
@@ -50,7 +51,7 @@ export function surveyDataEqualOpperator(s1: SurveyData, s2: SurveyData): boolea
 export async function getSurveyInfo(code: string): Promise<SurveyData | null>
 {
     const data: GetSurveyInfoResponse | null =
-        await requestPOST<GetSurveyInfoResponse>("/survey/backend/get_survey_info.php", {surveyCode: code});
+        await requestPOST<GetSurveyInfoResponse>(homeDir + "backend/get_survey_info.php", {surveyCode: code});
     if(!data || data.error !== "") return null;
     return data.surveyInfo;
 }
@@ -58,7 +59,7 @@ export async function getSurveyInfo(code: string): Promise<SurveyData | null>
 async function vote(optionId: number, surveyCode: string): Promise<boolean>
 {
     const data: VoteResponse | null =
-        await requestPOST<VoteResponse>("/survey/backend/vote.php", {
+        await requestPOST<VoteResponse>(homeDir + "backend/vote.php", {
                 surveyCode: surveyCode,
                 optionId: optionId
         });
@@ -69,7 +70,7 @@ async function vote(optionId: number, surveyCode: string): Promise<boolean>
 async function hasVoted(surveyCode: string): Promise<boolean | null>
 {   
     const data: HasVotedResponse | null =
-        await requestPOST<HasVotedResponse>("/survey/backend/has_voted.php", {surveyCode: surveyCode});
+        await requestPOST<HasVotedResponse>(homeDir + "backend/has_voted.php", {surveyCode: surveyCode});
     if(!data || data.error !== "") return null;
     return data.hasVoted;
 }
@@ -139,11 +140,11 @@ function setOptionsEventListener(code: string): void
         btn.addEventListener("click", async () => {
             if(!await vote(optionId, code))
             {
-                location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
+                goTo("index.html", {"error-title": "Something went wrong while voting", "error-content": "Try again later or try other survey"});
             }
             else
             {
-                location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
+                goTo("pages/results.html", {"code": code});
             }
         })
     })
@@ -154,20 +155,21 @@ export async function init(): Promise<void>
 
     console.log(code);
 
-    if(!code) document.location.href = "/survey";
+    if(!code) goTo("index.html");
 
     code = code as string;
 
 
     let surveyInfo: SurveyData | null = await getSurveyInfo(code);
     if(!surveyInfo)
-        document.location.href = "/survey/index.html?error-title=Something went wrong while loading survey data&error-content=Try again later or try other survey";
+        goTo("index.html", {"error-title": "Something went wrong while loading survey data", "error-content": "Try again later or try other survey"});
     surveyInfo = surveyInfo as SurveyData;
 
     const voted = await hasVoted(code);
     if(voted === null)
-        location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
-    if(voted === true) location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
+        goTo("index.html", {"error-title": "Something went wrong while voting", "error-content": "Try again later or try other survey"});
+    if(voted === true)
+        goTo("pages/results.html", {"code": code});
 
     render(surveyInfo);
 

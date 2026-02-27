@@ -1,8 +1,8 @@
-import { $, $$ } from "../shared/selectors.js";
+import { $ } from "../shared/selectors.js";
 import { requestPOST } from "../shared/request.js";
-import {SurveyData, GetSurveyInfoResponse } from "../shared/vote_module.js";
+import {GetSurveyInfoResponse } from "../shared/vote_module.js";
 import { copyToClipboard } from "../shared/clipboard.js";
-
+import { goTo, homeDir} from "../shared/link.js";
 
 interface FormCreateSurveyData
 {
@@ -58,29 +58,28 @@ function setFormEventListener(): void
 async function onFormSubmit(e: Event, formElem: HTMLFormElement): Promise<void>
 {
     e.preventDefault();
-
     const questionElem: HTMLInputElement = formElem.querySelector(".question input") as HTMLInputElement;
     const optionElems: NodeListOf<HTMLInputElement> = formElem.querySelectorAll<HTMLInputElement>(".option input");
 
     const isValid = validateForm(questionElem, optionElems);
     if(isValid === null)
     {
-        location.href = "/survey/index.html?error-title=Something went wrong while creating survey&error-content=Try again later";
+        goTo("index.html", {"error-title": "Something went wrong while creating survey", "error-content": "Try again later"})
     }
     if(!isValid)
         return;
 
     const formData: FormCreateSurveyData = {question: questionElem.value, options: Array.from(optionElems).map((o) => o.value)};
 
-    const surveyData: GetSurveyInfoResponse | null = await requestPOST<GetSurveyInfoResponse>("/survey/backend/create_survey.php", formData);
+    const surveyData: GetSurveyInfoResponse | null = await requestPOST<GetSurveyInfoResponse>(homeDir + "backend/create_survey.php", formData);
 
     if(!surveyData)
     {
-        location.href = "/survey/index.html?error-title=Something went wrong while creating survey&error-content=Try again later";
+        goTo("index.html", {"error-title": "Something went wrong while creating survey", "error-content": "Try again later"})
         return;
     }
     await copyToClipboard(surveyData.surveyInfo.surveyCode, questionElem);
-    location.href = `/survey/pages/vote.html?code=${encodeURIComponent(surveyData.surveyInfo.surveyCode)}`;
+    goTo("index.html", {"code": surveyData.surveyInfo.surveyCode});
 }
 
 function refreshOptions(): void

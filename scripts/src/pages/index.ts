@@ -1,5 +1,6 @@
 import { $ } from "../shared/selectors.js";
 import { requestPOST, ResponseWithErrorField } from "../shared/request.js";
+import { goTo, homeDir } from "../shared/link.js";
 
 interface PopupError
 {
@@ -43,9 +44,9 @@ async function onFormSubmit(e: Event | null, formElem: HTMLFormElement): Promise
         const formData = new FormData(formElem);
 
         const code = formData.get("survey-code")?.toString() ?? "";
-        
+        console.log(homeDir + "backend/validate_survey_code.php");
         const data: ValidateResponce | null =
-            await requestPOST<ValidateResponce>("/survey/backend/validate_survey_code.php", {surveyCode: code})
+            await requestPOST<ValidateResponce>(homeDir + "backend/validate_survey_code.php", {surveyCode: code})
         
         if(data === null) throw new Error("Server error");
 
@@ -56,7 +57,7 @@ async function onFormSubmit(e: Event | null, formElem: HTMLFormElement): Promise
 
         if(isValid)
         {
-            document.location.href = `/survey/pages/vote.html?code=${encodeURIComponent(code)}`;
+            goTo("pages/vote.html", {"code": code});
         }
         else showPopup({title: "Survey not found", content: "No survey exists with that code. Check and try again."});
     }

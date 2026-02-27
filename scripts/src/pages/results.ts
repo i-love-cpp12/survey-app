@@ -2,6 +2,7 @@ import { $, $$ } from "../shared/selectors.js";
 import { setCopyBtnEventListener, getSurveyInfo, SurveyOption, SurveyData, surveyDataEqualOpperator }
     from "../shared/vote_module.js";
 import { setIntervalNoDelay } from "../shared/set_interval.js";
+import { goTo } from "../shared/link.js";
 //add code reading from url params 
 function render(surveyData: SurveyData, refreshRateMS: number = 2000): void
 {
@@ -55,7 +56,7 @@ const refresh = (() => {
 
         if(surveyData === null)
         {
-            location.href = "/survey/index.html?error-title=Something went wrong while resiving results&error-content=Try again later or try other survey";
+            goTo("index.html", {"error-title": "Something went wrong while resiving results", "error-content": "Try again later or try other survey"});
             return;
         }
 
@@ -75,7 +76,7 @@ async function init(refreshRateMS: number): Promise<void>
     const surveyCode: string | null = url.searchParams.get("code");
     if(!surveyCode)
     {
-        location.href = "/survey/index.html?error-title=Something went wrong while resiving results&error-content=Try again later or try other survey";
+        goTo("index.html", {"error-title": "Something went wrong while resiving results", "error-content": "Try again later or try other survey"});
         return;
     }
     setIntervalNoDelay(() => {

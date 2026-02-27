@@ -2,6 +2,7 @@ import { $ } from "../shared/selectors.js";
 import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
 import { requestPOST } from "../shared/request.js";
+import { goTo, homeDir } from "./link.js";
 export function surveyOptionEqualOpperator(o1, o2) {
     return o1.id === o2.id && o1.value === o2.value && o1.votesCount === o2.votesCount;
 }
@@ -19,13 +20,13 @@ export function surveyDataEqualOpperator(s1, s2) {
     return true;
 }
 export async function getSurveyInfo(code) {
-    const data = await requestPOST("/survey/backend/get_survey_info.php", { surveyCode: code });
+    const data = await requestPOST(homeDir + "backend/get_survey_info.php", { surveyCode: code });
     if (!data || data.error !== "")
         return null;
     return data.surveyInfo;
 }
 async function vote(optionId, surveyCode) {
-    const data = await requestPOST("/survey/backend/vote.php", {
+    const data = await requestPOST(homeDir + "backend/vote.php", {
         surveyCode: surveyCode,
         optionId: optionId
     });
@@ -34,7 +35,7 @@ async function vote(optionId, surveyCode) {
     return data.voted;
 }
 async function hasVoted(surveyCode) {
-    const data = await requestPOST("/survey/backend/has_voted.php", { surveyCode: surveyCode });
+    const data = await requestPOST(homeDir + "backend/has_voted.php", { surveyCode: surveyCode });
     if (!data || data.error !== "")
         return null;
     return data.hasVoted;
@@ -92,10 +93,10 @@ function setOptionsEventListener(code) {
         const optionId = parseInt(btn.getAttribute("data-option-id"));
         btn.addEventListener("click", async () => {
             if (!await vote(optionId, code)) {
-                location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
+                goTo("index.html", { "error-title": "Something went wrong while voting", "error-content": "Try again later or try other survey" });
             }
             else {
-                location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
+                goTo("pages/results.html", { "code": code });
             }
         });
     });
@@ -104,17 +105,17 @@ export async function init() {
     let code = new URL(document.URL).searchParams.get("code");
     console.log(code);
     if (!code)
-        document.location.href = "/survey";
+        goTo("index.html");
     code = code;
     let surveyInfo = await getSurveyInfo(code);
     if (!surveyInfo)
-        document.location.href = "/survey/index.html?error-title=Something went wrong while loading survey data&error-content=Try again later or try other survey";
+        goTo("index.html", { "error-title": "Something went wrong while loading survey data", "error-content": "Try again later or try other survey" });
     surveyInfo = surveyInfo;
     const voted = await hasVoted(code);
     if (voted === null)
-        location.href = "/survey/index.html?error-title=Something went wrong while voting&error-content=Try again later or try other survey";
+        goTo("index.html", { "error-title": "Something went wrong while voting", "error-content": "Try again later or try other survey" });
     if (voted === true)
-        location.href = `/survey/pages/results.html?code=${encodeURIComponent(code)}`;
+        goTo("pages/results.html", { "code": code });
     render(surveyInfo);
     setCopyBtnEventListener(code);
     setOptionsEventListener(code);

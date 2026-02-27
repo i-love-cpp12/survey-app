@@ -1,5 +1,6 @@
 import { $ } from "../shared/selectors.js";
 import { requestPOST } from "../shared/request.js";
+import { goTo, homeDir } from "../shared/link.js";
 const showPopup = (() => {
     let popupSetTimeOutId = null;
     return (error) => {
@@ -21,14 +22,15 @@ async function onFormSubmit(e, formElem) {
     try {
         const formData = new FormData(formElem);
         const code = formData.get("survey-code")?.toString() ?? "";
-        const data = await requestPOST("/survey/backend/validate_survey_code.php", { surveyCode: code });
+        console.log(homeDir + "backend/validate_survey_code.php");
+        const data = await requestPOST(homeDir + "backend/validate_survey_code.php", { surveyCode: code });
         if (data === null)
             throw new Error("Server error");
         const isValid = data && data.error === "" && data.isCodeOk;
         isValid ? console.log(data) : console.error(data);
         console.log("is valid:", isValid);
         if (isValid) {
-            document.location.href = `/survey/pages/vote.html?code=${encodeURIComponent(code)}`;
+            goTo("pages/vote.html", { "code": code });
         }
         else
             showPopup({ title: "Survey not found", content: "No survey exists with that code. Check and try again." });

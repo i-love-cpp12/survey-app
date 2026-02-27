@@ -1,6 +1,7 @@
 import { $ } from "../shared/selectors.js";
 import { requestPOST } from "../shared/request.js";
 import { copyToClipboard } from "../shared/clipboard.js";
+import { goTo, homeDir } from "../shared/link.js";
 function clearErrorsMsgInForm(question, options) {
     question.nextElementSibling.innerText = "";
     question?.parentElement?.classList.remove("field-not-valid");
@@ -40,18 +41,18 @@ async function onFormSubmit(e, formElem) {
     const optionElems = formElem.querySelectorAll(".option input");
     const isValid = validateForm(questionElem, optionElems);
     if (isValid === null) {
-        location.href = "/survey/index.html?error-title=Something went wrong while creating survey&error-content=Try again later";
+        goTo("index.html", { "error-title": "Something went wrong while creating survey", "error-content": "Try again later" });
     }
     if (!isValid)
         return;
     const formData = { question: questionElem.value, options: Array.from(optionElems).map((o) => o.value) };
-    const surveyData = await requestPOST("/survey/backend/create_survey.php", formData);
+    const surveyData = await requestPOST(homeDir + "backend/create_survey.php", formData);
     if (!surveyData) {
-        location.href = "/survey/index.html?error-title=Something went wrong while creating survey&error-content=Try again later";
+        goTo("index.html", { "error-title": "Something went wrong while creating survey", "error-content": "Try again later" });
         return;
     }
     await copyToClipboard(surveyData.surveyInfo.surveyCode, questionElem);
-    location.href = `/survey/pages/vote.html?code=${encodeURIComponent(surveyData.surveyInfo.surveyCode)}`;
+    goTo("index.html", { "code": surveyData.surveyInfo.surveyCode });
 }
 function refreshOptions() {
     const optionConatiner = $(".options");
