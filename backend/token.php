@@ -14,7 +14,7 @@ function setToken(PDO $pdo, int $maxAmountOfTryes = 20): string
             return "";
         $generatedToken = bin2hex(random_bytes(32));
     }
-    if(setcookie("token", $generatedToken, time() + 60 * 60 * 24 * 365 * 20, "/survey/backend"))
+    if(setcookie("token", $generatedToken, time() + 60 * 60 * 24 * 365 * 20, "../backend"))
         return $generatedToken;
     return "";
 }
