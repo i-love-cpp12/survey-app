@@ -52,7 +52,7 @@ DROP TABLE IF EXISTS `survey`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `survey` (
   `survey_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `survey_code` varchar(25) NOT NULL,
+  `survey_code` varchar(25) UNIQUE NOT NULL,
   `title` varchar(25) NOT NULL,
   `question` varchar(511) NOT NULL,
   `is_active` int(1) NOT NULL DEFAULT 1,

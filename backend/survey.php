@@ -1,8 +1,54 @@
 <?php
+
 class Survey
 {
     private bool $isCodeValid = true;
     private ?array $data = null;
+    private static string $codeChars = "qwertyuiopasdfghjklzxcvbnm1234567890";
+    public static function createSurvey(string $question, array $options, PDO $pdo): Survey | null
+    {
+        $surveyCode = Survey::generateSurveyCode($pdo, 7);
+        if(strlen($surveyCode) < 4 || $question === "" || count($options) < 2) return null;
+        foreach($options as $option)
+        {
+            if(!is_string($option) || $option === "") return null;  
+        }
+        $pdo->beginTransaction();
+        try
+        {
+            $stmt = $pdo->prepare("INSERT INTO survey(survey_code, question) VALUES (:surveyCode, :question);");
+            $stmt->execute(["surveyCode" => $surveyCode, "question" => $question]);
+    
+            $surveyId = intval($pdo->lastInsertId());
+    
+            foreach($options as $option)
+            {
+                $stmt = $pdo->prepare("INSERT INTO option(survey_id, `value`) VALUES (:surveyId, :optionValue);");
+                $stmt->execute(["surveyId" => $surveyId, "optionValue" => $option]);
+            }
+            $pdo->commit();
+        }
+        catch(Throwable $err)
+        {
+            $pdo->rollBack();
+            return null;
+        }
+        return new Survey($surveyCode, $pdo);
+    }
+    private static function generateSurveyCode(PDO $pdo, int $lenght = 7, int $maxTryesCount = 10): string
+    {
+        $result = null;
+        for($attempts = 0; ($result === null || $pdo->query("SELECT 1 FROM survey WHERE UPPER(survey_code) = UPPER('$result');")->rowCount() !== 0); $attempts++)
+        {
+            if($attempts >= $maxTryesCount) return "";
+            for($i = 0; $i < $lenght; ++$i)
+            {
+                $result .= strtoupper(Survey::$codeChars[random_int(0, strlen(Survey::$codeChars) - 1)]); 
+            }
+        }
+        return $result;
+        
+    }
     public function __construct(string $code, PDO $pdo)
     {
         $stmt = $pdo->prepare("SELECT s.survey_id as survey_id, s.survey_code as survey_code, s.question as question, o.option_id as option_id, o.value as option_value, COUNT(v.vote_id) as votes_count FROM survey as s JOIN `option` as o USING(survey_id) LEFT JOIN vote as v USING(option_id) WHERE UPPER(survey_code) = UPPER(:code) AND is_active = 1 GROUP BY o.option_id ORDER BY o.option_id;");
@@ -51,10 +97,10 @@ class Survey
     }
 
     public function hasVoted(string $userToken, PDO $pdo): bool
-    {
-        $stmt = $pdo->prepare("SELECT s.survey_code FROM survey AS s JOIN `option` AS o USING(survey_id) JOIN vote AS v USING(option_id) WHERE v.user_token = :token AND s.survey_code LIKE :code;");
+    {        
+        $stmt = $pdo->prepare("SELECT s.survey_code FROM survey AS s JOIN `option` AS o USING(survey_id) JOIN vote AS v USING(option_id) WHERE v.user_token = :token AND UPPER(s.survey_code) = UPPER(:code);");
         $stmt->execute(["token" => $userToken, "code" => $this->data["surveyCode"]]);
-        return $stmt->rowCount() === 1;
+        return $stmt->rowCount() > 0;
     }
 
     public function isOptionFromSurvey(int $optionId): bool
