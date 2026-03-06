@@ -8,4 +8,7 @@ use app\domain\entity\Survey;
 interface surveyRepository
 {
     public function save(Survey $survey): void;
+    public function findSurvey(int $surveyId): ?Survey;
+    /** @return Survey[] */
+    public function getSurveys(): array;
 }

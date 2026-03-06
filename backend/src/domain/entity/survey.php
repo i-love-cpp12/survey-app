@@ -4,6 +4,8 @@ require_once("option.php");
 
 namespace app\domain\entity;
 use InvalidArgumentException;
+use app\domain\entity\Option;
+use app\domain\entity\User;
 
 class Survey
 {
@@ -63,8 +65,8 @@ class Survey
     {
         $this->options[] = $option;
     }
-    
-    public function vote(int $optionId): bool
+
+    public function vote(int $optionId, User $user): bool
     {
         $optionIndex = null;
 
@@ -76,7 +78,6 @@ class Survey
 
         if(!$optionIndex) return false;
 
-        $this->options[$optionIndex]->addVote();
-        return true;
+        return $this->options[$optionIndex]->vote($user);
     }
 }
