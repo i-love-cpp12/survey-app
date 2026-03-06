@@ -4,7 +4,7 @@ require_once("user.php");
 namespace app\domain\entity;
 
 use InvalidArgumentException;
-use app\domain\entity\User;
+use app\domain\value_object\User;
 
 class Option
 {

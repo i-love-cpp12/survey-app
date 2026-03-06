@@ -5,7 +5,7 @@ require_once("option.php");
 namespace app\domain\entity;
 use InvalidArgumentException;
 use app\domain\entity\Option;
-use app\domain\entity\User;
+use app\domain\value_object\User;
 
 class Survey
 {

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace app\domain\entity;
+namespace app\domain\value_object;
 
-use app\domain\entity\Token;
+use app\domain\value_object\Token;
 
 class User
 {
