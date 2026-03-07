@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-require_once("user.php");
+require_once(__DIR__ . "/../value_object/user.php");
 namespace app\domain\entity;
 
 use InvalidArgumentException;
@@ -8,7 +8,7 @@ use app\domain\value_object\User;
 
 class Option
 {
-    readonly public int $id;
+    public readonly int $id;
     readonly public string $value;
     /** @var User[] */
     private array $votes;
@@ -33,11 +33,9 @@ class Option
     {
         return count($this->votes);
     }
-    public function vote(User $user): bool
+    public function vote(User $user): void
     {
-        if($this->hasVoted($user)) return false;
         $this->votes[] = $user;
-        return true;
     }
     public function hasVoted(User $user): bool
     {

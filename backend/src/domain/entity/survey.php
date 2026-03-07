@@ -1,12 +1,15 @@
 <?php
 declare(strict_types = 1);
-require_once("option.php");
+require_once(__DIR__ . "/option.php");
 
 namespace app\domain\entity;
-use InvalidArgumentException;
+
 use app\domain\entity\Option;
 use app\domain\value_object\User;
+
+use app\shared\exception\DomainException;
 use LogicException;
+use InvalidArgumentException;
 
 class Survey
 {
@@ -80,8 +83,15 @@ class Survey
     {
         $this->options[] = $option;
     }
-
-    public function vote(int $optionId, User $user): bool
+    public function hasVoted(User $user): bool
+    {
+        foreach($this->options as $option)
+        {
+            if($option->hasVoted($user)) return true;
+        }
+        return false;
+    }
+    public function vote(int $optionId, User $user): void
     {
         $optionIndex = null;
 
@@ -91,8 +101,11 @@ class Survey
                 $optionIndex = $i;
         }
 
-        if(!$optionIndex) return false;
+        if(!$optionIndex)
+            throw new DomainException("Option id not found");
+        if($this->options[$optionIndex]->hasVoted($user))
+            throw new DomainException("User already voted");
 
-        return $this->options[$optionIndex]->vote($user);
+        $this->options[$optionIndex]->vote($user);
     }
 }

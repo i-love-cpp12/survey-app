@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require_once("survey.php");
+require_once(__DIR__ . "/../entity/survey.php");
 
 namespace app\domain\repository;
 use app\domain\entity\Survey;
