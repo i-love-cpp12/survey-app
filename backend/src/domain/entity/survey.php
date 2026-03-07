@@ -6,13 +6,14 @@ namespace app\domain\entity;
 use InvalidArgumentException;
 use app\domain\entity\Option;
 use app\domain\value_object\User;
+use LogicException;
 
 class Survey
 {
     public static int $minCodeSize = 3;
     public static int $maxCodeSize = 20;
 
-    readonly public int $id;
+    private ?int $id;
     readonly public string $question;
     readonly public string $code;
     public bool $isActive;
@@ -20,7 +21,7 @@ class Survey
     /** @var Option[] */
     private array $options;
 
-    function __construct(int $id, string $question, string $code, array $options, bool $isActive = true)
+    function __construct(?int $id, string $question, string $code, array $options, bool $isActive = true)
     {
         if($id < 0)
             throw new InvalidArgumentException("survey vote id can not be negative");
@@ -43,6 +44,20 @@ class Survey
         $this->code = strtoupper($code);
         $this->isActive = $isActive;
         $this->options = $options;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        if($this->id)
+            throw new LogicException("Id is already set");
+        if($id < 0)
+            throw new InvalidArgumentException("Id can not be negative");
+        $this->id = $id;
     }
 
     /** @return Option[] */
