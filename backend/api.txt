@@ -1,0 +1,5 @@
+GET api/survey | get all surevys
+GET api/survey/{code} | get surevy by code 
+GET api/survey/{code}/results | get surevy resutls by code
+POST api/surevy/create | create surevy
+POST api/survey/{code}/vote | vote in surevy

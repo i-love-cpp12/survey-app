@@ -7,6 +7,6 @@ class VoteDTO
 {
     function __construct(
         readonly public string $surveyCode,
-        readonly public int $optionId,
+        readonly public ?int $optionId,
         readonly public string $unhashedToken){}
 }
