@@ -12,8 +12,6 @@ use app\domain\repository\SurveyRepository;
 use app\domain\entity\Survey;
 use app\shared\exception\DomainException;
 
-// use app\domain\entity\Option;
-// use app\domain\value_object\User;
 
 class SurveyGenerateCodeService
 {
@@ -26,7 +24,7 @@ class SurveyGenerateCodeService
         do
         {
             $generatedCode = self::generateCode($codeLenght);
-        } while($this->surveyRepo->findSurveyByCode($generatedCode));
+        } while($this->surveyRepo->codeExists($generatedCode));
 
         return $generatedCode;
     }

@@ -9,6 +9,7 @@ interface SurveyRepository
 {
     public function save(Survey $survey): void;
     public function findSurveyByCode(string $code): ?Survey;
+    public function codeExists(string $code): bool;
     /** @return Survey[] */
     public function getSurveys(): array;
 }
