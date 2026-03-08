@@ -5,7 +5,6 @@ require_once(__DIR__ . "/option.php");
 namespace app\domain\entity;
 
 use app\domain\entity\Option;
-use app\domain\value_object\User;
 
 use app\shared\exception\DomainException;
 use LogicException;
@@ -15,6 +14,7 @@ class Survey
 {
     public static int $minCodeSize = 3;
     public static int $maxCodeSize = 20;
+    public static $allowedCodeChars = "1234567890QWERTYUIOPASDFGHJKLZXCVBNM";
 
     private ?int $id;
     readonly public string $question;
@@ -26,14 +26,12 @@ class Survey
 
     function __construct(?int $id, string $question, string $code, array $options, bool $isActive = true)
     {
-        if($id < 0)
-            throw new InvalidArgumentException("survey vote id can not be negative");
         if(empty($question))
             throw new InvalidArgumentException("Survey question can not be empty");
         if(empty($question))
             throw new InvalidArgumentException("Survey question can not be empty");
-        if(strlen($code) < self::$minCodeSize || strlen($code) > self::$maxCodeSize)
-            throw new InvalidArgumentException("Survey code must be (" . self::$minCodeSize . " - " . self::$maxCodeSize . ") long");
+        if(self::validateCode($code))
+            throw new InvalidArgumentException("Survey code must be (" . self::$minCodeSize . " - " . self::$maxCodeSize . ") long and only contain characters from this list(".self::$allowedCodeChars.")");
         if(empty($options))
             throw new InvalidArgumentException("Survey has to have options");
         foreach($options as $option)
@@ -41,8 +39,9 @@ class Survey
             if(!$option instanceof Option)
                 throw new InvalidArgumentException("All options given has to be instance of " . Option::class . " class");
         }
+        $this->id = null;
+        $this->setId($id);
 
-        $this->id = $id;
         $this->question = $question;
         $this->code = strtoupper($code);
         $this->isActive = $isActive;
@@ -62,7 +61,25 @@ class Survey
             throw new InvalidArgumentException("Id can not be negative");
         $this->id = $id;
     }
+    public static function validateCodeLenght(int $length): bool
+    {
+        return $length >= self::$minCodeSize && $length <= self::$maxCodeSize;
+    }
+    public static function validateCode(string $code): bool
+    {
+        $code = strtoupper($code);
+        $lenght = strlen($code);
+        if(!self::validateCodeLenght($lenght))
+            return false;
 
+        for($i = 0; $i < $lenght; ++$i)
+        {
+            $char = $code[$i];
+            if(!str_contains(self::$allowedCodeChars, $char))
+                return false;
+        }
+        return true;
+    }
     /** @return Option[] */
     public function getOptions(): array
     {
@@ -83,15 +100,7 @@ class Survey
     {
         $this->options[] = $option;
     }
-    public function hasVoted(User $user): bool
-    {
-        foreach($this->options as $option)
-        {
-            if($option->hasVoted($user)) return true;
-        }
-        return false;
-    }
-    public function vote(int $optionId, User $user): void
+    public function vote(int $optionId): void
     {
         $optionIndex = null;
 
@@ -103,9 +112,7 @@ class Survey
 
         if(!$optionIndex)
             throw new DomainException("Option id not found");
-        if($this->options[$optionIndex]->hasVoted($user))
-            throw new DomainException("User already voted");
 
-        $this->options[$optionIndex]->vote($user);
+        $this->options[$optionIndex]->addVote();
     }
 }

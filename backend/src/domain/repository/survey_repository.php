@@ -5,10 +5,9 @@ require_once(__DIR__ . "/../entity/survey.php");
 namespace app\domain\repository;
 use app\domain\entity\Survey;
 
-interface surveyRepository
+interface SurveyRepository
 {
     public function save(Survey $survey): void;
-    public function findSurveyById(int $surveyId): ?Survey;
     public function findSurveyByCode(string $code): ?Survey;
     /** @return Survey[] */
     public function getSurveys(): array;

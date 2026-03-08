@@ -4,16 +4,13 @@ require_once(__DIR__ . "/../value_object/user.php");
 namespace app\domain\entity;
 
 use InvalidArgumentException;
-use app\domain\value_object\User;
 
 class Option
 {
     public readonly int $id;
     readonly public string $value;
-    /** @var User[] */
-    private array $votes;
-    /** @param User[] $votes */
-    function __construct(int $id, string $value, array $votes = [])
+    private int $voteCount;
+    function __construct(int $id, string $value, int $voteCount = 0)
     {
         if($id < 0)
             throw new InvalidArgumentException("option vote id can not be negative");
@@ -22,28 +19,16 @@ class Option
 
         $this->id = $id;
         $this->value = $value;
-        foreach($votes as $vote)
-        {
-            if(!$vote instanceof User)
-                throw new InvalidArgumentException("all option votes has to be type of ". User::class);   
-        }
-        $this->votes = $votes;
+
+        if($voteCount < 0)
+            throw new InvalidArgumentException("option vote count can not be negative");
     }
     public function getVotesCount(): int
     {
-        return count($this->votes);
+        return $this->voteCount;
     }
-    public function vote(User $user): void
+    public function addVote(): void
     {
-        $this->votes[] = $user;
-    }
-    public function hasVoted(User $user): bool
-    {
-        foreach($this->votes as $vote)
-        {
-            if($vote->token->value === $user->token->value)
-                return true;
-        }
-        return false;
+        $this->voteCount++;
     }
 }
