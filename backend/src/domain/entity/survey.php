@@ -1,12 +1,13 @@
 <?php
 declare(strict_types = 1);
 require_once(__DIR__ . "/option.php");
+require_once(__DIR__ . "/../../shared/exception/exception.php");
 
 namespace app\domain\entity;
 
 use app\domain\entity\Option;
 
-use app\shared\exception\DomainException;
+use app\shared\exception\OptionNotFoundException;
 use LogicException;
 use InvalidArgumentException;
 
@@ -111,7 +112,7 @@ class Survey
         }
 
         if(!$optionIndex)
-            throw new DomainException("Option id not found");
+            throw new OptionNotFoundException("Option id not found");
 
         $this->options[$optionIndex]->addVote();
     }
