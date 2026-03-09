@@ -6,18 +6,26 @@ require_once(__DIR__ . "/../../infrastructure/http/request.php");
 
 namespace app\interface\controler;
 
+use app\application\service\SurevyVoteService;
 use app\application\DTO\VoteDTO;
-use app\domain\value_object\Vote;
 use app\infrastructure\http\Request;
+use app\infrastructure\http\Respond;
+use app\shared\exception\AlreadyVotedException;
+use app\shared\exception\OptionNotFoundException;
+use app\shared\exception\SurveyNotFoundException;
+use app\shared\exception\ValidationException;
+use Exception;
+use Throwable;
 
 class SurveyVoteControler
 {
     function __construct(private SurevyVoteService $surveyVoteService){}
 
-    public function vote(int $surevyCode): void
+    public function vote(string $surevyCode): void
     {
         $optionId = new Request()->bodyJSON()["optionId"];
         $rowToken = $_SERVER["HTTP_USER_AGENT"] . $_SERVER["REMOTE_ADDR"];
+
         $DTO = new VoteDTO(
             $surevyCode,
             $optionId,
@@ -26,8 +34,22 @@ class SurveyVoteControler
 
         try
         {
-            $surveyVoteService->vote($DTO);
+            $this->surveyVoteService->execute($DTO);
         }
-        catch()
+        catch(Throwable $e)
+        {
+            $this->handleException($e, $DTO);
+        }
+    }
+    private function handleException(Exception $e, VoteDTO $DTO): void
+    {
+        if($e instanceof ValidationException)
+            Respond::json(["error" => "Option id must be provided"], 422);
+        if($e instanceof SurveyNotFoundException)
+            Respond::json(["error" => "Survey with code: $DTO->surveyCode not found"], 404);
+        if($e instanceof OptionNotFoundException)
+            Respond::json(["error" => "Survey with code: $DTO->surveyCode have not have option with Id: " . $DTO->optionId], 404);
+        if($e instanceof AlreadyVotedException)
+            Respond::json(["error" => "You can not vote in the same survey twice or more: $DTO->surveyCode"], 400);
     }
 }
