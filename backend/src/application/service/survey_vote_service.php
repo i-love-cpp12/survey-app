@@ -1,13 +1,14 @@
 <?php
 declare(strict_types = 1);
 
+namespace app\application\service;
+
 require_once(__DIR__ . "/../../domain/repository/survey_repository.php");
 require_once(__DIR__ . "/../../domain/repository/survey_vote_repository.php");
 require_once(__DIR__ . "/../DTO/voteDTO.php");
 require_once(__DIR__ . "/../DTO/voteDTO.php");
 require_once(__DIR__ . "/../../shared/exception/exception.php");
 
-namespace app\application\service;
 
 use app\domain\repository\SurveyRepository;
 use app\domain\repository\VoteRepository;
@@ -45,6 +46,7 @@ class SurevyVoteService
 
         $vote = new Vote(null, $survey->getId(), $DTO->optionId, $user);
 
+        $survey->vote($DTO->optionId);
         $this->voteRepo->save($vote);
     }
 }

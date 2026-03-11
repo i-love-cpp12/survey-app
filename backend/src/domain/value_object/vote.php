@@ -1,8 +1,11 @@
 <?php
 declare(strict_types=1);
-require_once(__DIR__ . "/user.php");
 
 namespace app\domain\value_object;
+
+require_once(__DIR__ . "/user.php");
+
+
 use app\domain\value_object\User;
 use InvalidArgumentException;
 use LogicException;

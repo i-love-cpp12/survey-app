@@ -1,7 +1,9 @@
 <?php
 declare(strict_types = 1);
-require_once(__DIR__ . "/../value_object/user.php");
+
 namespace app\domain\entity;
+
+require_once(__DIR__ . "/../value_object/user.php");
 
 use InvalidArgumentException;
 

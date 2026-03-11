@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
+namespace app\domain\service;
+
 require_once(__DIR__ . "/../repository/survey_repository.php");
 require_once(__DIR__ . "/../entity/survey.php");
 require_once(__DIR__ . "/../../shared/exception/domain_exception.php");
 
-namespace app\domain\service;
 
 use app\domain\repository\SurveyRepository;
 use app\domain\entity\Survey;
-use app\shared\exception\DomainException;
-
+use app\shared\exception\ValidationException;
 
 class SurveyGenerateCodeService
 {
@@ -19,7 +19,7 @@ class SurveyGenerateCodeService
     function execute(int $codeLenght): string
     {
         if(Survey::validateCodeLenght($codeLenght))
-            throw new DomainException("Code must be (" . Survey::$minCodeSize . " - " . Survey::$maxCodeSize . ") long");
+            throw new ValidationException("Code must be (" . Survey::$minCodeSize . " - " . Survey::$maxCodeSize . ") long");
         $generatedCode = "";
         do
         {

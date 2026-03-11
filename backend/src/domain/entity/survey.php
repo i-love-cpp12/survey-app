@@ -1,9 +1,11 @@
 <?php
 declare(strict_types = 1);
+
+namespace app\domain\entity;
+
 require_once(__DIR__ . "/option.php");
 require_once(__DIR__ . "/../../shared/exception/exception.php");
 
-namespace app\domain\entity;
 
 use app\domain\entity\Option;
 

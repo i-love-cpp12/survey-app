@@ -1,7 +1,9 @@
 <?php
 declare(strict_types = 1);
-require_once(__DIR__ . "/token.php");
+
 namespace app\domain\value_object;
+
+require_once(__DIR__ . "/token.php");
 
 use app\domain\value_object\Token;
 

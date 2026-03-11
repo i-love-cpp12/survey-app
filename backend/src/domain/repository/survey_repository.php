@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
-require_once(__DIR__ . "/../entity/survey.php");
 
 namespace app\domain\repository;
+
+require_once(__DIR__ . "/../entity/survey.php");
+
 use app\domain\entity\Survey;
 
 interface SurveyRepository
