@@ -7,7 +7,7 @@ require_once(__DIR__ . "/../../application/service/survey_vote_service.php");
 require_once(__DIR__ . "/../../application/DTO/voteDTO.php");
 require_once(__DIR__ . "/../../infrastructure/http/request.php");
 
-use app\application\service\SurevyVoteService;
+use app\application\service\SurveyVoteService;
 use app\application\DTO\VoteDTO;
 use app\infrastructure\http\Request;
 use app\infrastructure\http\Respond;
@@ -20,7 +20,7 @@ use Throwable;
 
 class SurveyVoteControler
 {
-    function __construct(private SurevyVoteService $surveyVoteService){}
+    function __construct(private SurveyVoteService $surveyVoteService){}
 
     public function vote(string $surevyCode): void
     {
@@ -42,7 +42,7 @@ class SurveyVoteControler
             $this->handleException($e, $DTO);
         }
 
-        //message to do
+        //message to do | successs
         Respond::json(["error" => ""]);
 
         

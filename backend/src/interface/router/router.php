@@ -35,7 +35,7 @@ class Router
         foreach($this->routes[$method] as $route => $handler)
         {
             $routePattern = preg_replace("#\{[A-Z0-9a-z]+\}#", "([A-Z0-9]+)", $route);
-            $routePattern = "#^" . $routePattern . "$#";
+            $routePattern = "#^.+/" . $routePattern . "$#";
 
             if(!preg_match($routePattern, $uri, $matches))
                 continue;

@@ -23,7 +23,7 @@ use app\shared\exception\AlreadyVotedException;
 use app\shared\exception\OptionNotFoundException;
 use app\shared\exception\ValidationException;
 
-class SurevyVoteService
+class SurveyVoteService
 {
     function __construct(private SurveyRepository $surveyRepo, private VoteRepository $voteRepo){}
     public function execute(VoteDTO $DTO): void
