@@ -33,8 +33,8 @@ class Survey
             throw new InvalidArgumentException("Survey question can not be empty");
         if(empty($question))
             throw new InvalidArgumentException("Survey question can not be empty");
-        if(self::validateCode($code))
-            throw new InvalidArgumentException("Survey code must be (" . self::$minCodeSize . " - " . self::$maxCodeSize . ") long and only contain characters from this list(".self::$allowedCodeChars.")");
+        if(!self::validateCode($code))
+            throw new InvalidArgumentException("Survey code must be (" . self::$minCodeSize . " - " . self::$maxCodeSize . ") long and only contain characters from this list(".self::$allowedCodeChars."), but $code were given");
         if(empty($options))
             throw new InvalidArgumentException("Survey has to have options");
         foreach($options as $option)
@@ -74,13 +74,15 @@ class Survey
         $lenght = strlen($code);
         if(!self::validateCodeLenght($lenght))
             return false;
-
+            
+        
         for($i = 0; $i < $lenght; ++$i)
         {
             $char = $code[$i];
             if(!str_contains(self::$allowedCodeChars, $char))
                 return false;
         }
+
         return true;
     }
     /** @return Option[] */

@@ -13,7 +13,7 @@ use app\domain\value_object\User;
 interface VoteRepository
 {
     public function save(Vote $vote): void;
-    public function hasVoted(int $surveyId, User $user): bool;
+    public function hasVoted(string $surveyCode, User $user): bool;
     /** @return Option[] */
-    public function getSurveyResults(int $surveyId): array;
+    public function getSurveyResults(string $surveyCode): array;
 }

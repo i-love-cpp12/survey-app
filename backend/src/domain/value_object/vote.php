@@ -21,7 +21,7 @@ class Vote
     {
         $this->id = null;
         $this->setId($id);
-            throw new InvalidArgumentException("Vote id can not be negative");
+        
         if($surveyId < 0)
             throw new InvalidArgumentException("Surevy id can not be negative");
         if($optionId < 0)
