@@ -2,8 +2,8 @@
 declare(strict_types=1);
 namespace app\infrastructure\repository;
 
-require_once(__DIR__ . "/../../domain/repository/survey_repository.php");
-require_once(__DIR__ . "/../../domain/entity/surevy.php");
+require_once(__DIR__ . "/../../infrastructure/repository/survey_repository.php");
+require_once(__DIR__ . "/../../domain/entity/survey.php");
 
 use app\domain\entity\Survey;
 use app\domain\repository\SurveyRepository;

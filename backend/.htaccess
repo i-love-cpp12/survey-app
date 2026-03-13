@@ -1,3 +1,2 @@
 RewriteEngine On
-
-RewriteRule ^.*$ ./backend/public/index.php [QSA,L]
+RewriteRule ^(.*)$ public/index.php [QSA,L]
