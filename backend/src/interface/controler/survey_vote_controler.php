@@ -24,7 +24,7 @@ class SurveyVoteControler
 
     public function vote(string $surevyCode): void
     {
-        $optionId = new Request()->bodyJSON()["optionId"];
+        $optionId = (new Request())->bodyJSON()["optionId"];
         $rowToken = $_SERVER["HTTP_USER_AGENT"] . $_SERVER["REMOTE_ADDR"];
 
         $DTO = new VoteDTO(
