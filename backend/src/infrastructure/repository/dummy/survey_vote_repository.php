@@ -45,9 +45,4 @@ class DummySurveyVoteRepository implements VoteRepository
     {
         return false;
     }
-    /** @return Option[] */
-    public function getSurveyResults(string $surveyCode): array
-    {
-        return [];
-    }
 }

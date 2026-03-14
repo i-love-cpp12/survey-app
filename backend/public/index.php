@@ -15,6 +15,7 @@ require_once(__DIR__ . "/../src/infrastructure/http/request.php");
 
 use app\application\service\SurveyGetAllService;
 use app\application\service\SurveyGetByCodeService;
+use app\application\service\SurveyGetResultsService;
 use app\application\service\SurveyVoteService;
 use app\infrastructure\http\Request;
 use app\interface\router\Router;
@@ -30,12 +31,14 @@ $surveyRepository = new DummySurveyRepository();
 $voteService = new SurveyVoteService($surveyRepository, $voteRepository);
 $getByCodeService = new SurveyGetByCodeService($surveyRepository);
 $getAllService = new SurveyGetAllService($surveyRepository);
+$getResultsService = new SurveyGetResultsService($surveyRepository);
 
 $voteControler = new SurveyVoteControler($voteService);
-$surveyControler = new SurveyControler($getByCodeService, $getAllService);
+$surveyControler = new SurveyControler($getByCodeService, $getAllService, $getResultsService);
 
 $router->get("backend/survey/{code}", [$surveyControler, 'getByCode']);
 $router->get("backend/survey", [$surveyControler, 'getAll']);
+$router->get("backend/survey/{code}/results", [$surveyControler, 'getResults']);
 $router->post("backend/survey/{code}/vote", [$voteControler, 'vote']);
 
 $request = new Request();

@@ -4,12 +4,17 @@ declare(strict_types=1);
 namespace app\interface\controler;
 
 require_once(__DIR__ . "/../../application/service/survey_get_by_code_service.php");
+require_once(__DIR__ . "/../../application/service/survey_get_results_service.php");
 require_once(__DIR__ . "/../../infrastructure/http/respond.php");
 require_once(__DIR__ . "/../../infrastructure/http/exception_handler.php");
+require_once(__DIR__ . "/../../domain/entity/survey.php");
+require_once(__DIR__ . "/../../domain/entity/option.php");
 
 use app\application\service\SurveyGetAllService;
 use app\application\service\SurveyGetByCodeService;
+use app\application\service\SurveyGetResultsService;
 use app\domain\entity\Survey;
+use app\domain\entity\Option;
 use app\infrastructure\http\ExceptionHandler;
 use app\infrastructure\http\Respond;
 use Throwable;
@@ -18,9 +23,10 @@ class SurveyControler
 {
     function __construct(
         private SurveyGetByCodeService $surveyGetByCodeService,
-        private SurveyGetAllService $surveyGetAllService){}
+        private SurveyGetAllService $surveyGetAllService,
+        private SurveyGetResultsService $surveyGetResultsService){}
 
-    public function getByCode($code): void
+    public function getByCode(string $code): void
     {
         $survey = null;
         try
@@ -53,7 +59,7 @@ class SurveyControler
 
         foreach($surveys as $survey)
         {
-            $payload[] = $this->surveyToPayLoad($survey);    
+            $payload[] = $this->surveyToPayload($survey);    
         }
 
         Respond::json([
@@ -61,7 +67,38 @@ class SurveyControler
             "data" => $payload
         ]);
     }
-    private function surveyToPayLoad(Survey $survey): array
+    public function getResults(string $code): void
+    {
+        $results = null;
+        try
+        {
+            $results = $this->surveyGetResultsService->execute($code);
+        }
+        catch(Throwable $e)
+        {
+            ExceptionHandler::handle($e);
+        }
+
+        Respond::json([
+            "error" => "",
+            "data" => $this->optionsToPayload($results)
+        ]);
+    }
+    /** @param Option[] */
+    private function optionsToPayload(array $options): array
+    {
+        $result = [];
+        foreach($options as $option)
+        {
+            $result[] = [
+                "id" => $option->id,
+                "value" => $option->value,
+                "votesCount" => $option->getVotesCount()
+            ];
+        }
+        return $result;
+    }
+    private function surveyToPayload(Survey $survey): array
     {
         $suveyEntity = [
             "id" => $survey->getId(),
@@ -70,15 +107,7 @@ class SurveyControler
             "isActive" => $survey->isActive
         ];
 
-        $options = [];
-        foreach($survey->getOptions() as $option)
-        {
-            $options[] = [
-                "id" => $option->id,
-                "value" => $option->value,
-                "votesCount" => $option->getVotesCount()
-            ];
-        }
+        $options = $this->optionsToPayload($survey->getOptions());
 
         return [
             "survey" => $suveyEntity,

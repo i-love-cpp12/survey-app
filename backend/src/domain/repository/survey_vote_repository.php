@@ -14,6 +14,4 @@ interface VoteRepository
 {
     public function save(Vote $vote): void;
     public function hasVoted(string $surveyCode, User $user): bool;
-    /** @return Option[] */
-    public function getSurveyResults(string $surveyCode): array;
 }

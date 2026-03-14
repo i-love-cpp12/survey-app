@@ -14,4 +14,7 @@ interface SurveyRepository
     public function codeExists(string $code): bool;
     /** @return Survey[] */
     public function getSurveys(): array;
+
+    /** @return Option[] */
+    public function getSurveyResults(string $code): array | null;
 }

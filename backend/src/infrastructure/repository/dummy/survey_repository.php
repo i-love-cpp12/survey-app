@@ -58,7 +58,7 @@ class DummySurveyRepository implements SurveyRepository
         }
         return null;
     }
-    
+
     public function codeExists(string $code): bool
     {
         $code = strtoupper($code);
@@ -74,5 +74,18 @@ class DummySurveyRepository implements SurveyRepository
     public function getSurveys(): array
     {
         return $this->surveys;
+    }
+
+    /** @return Option[] */
+    public function getSurveyResults(string $code): array | null
+    {
+        $code = strtoupper($code);
+        foreach($this->surveys as $survey)
+        {
+            if($survey->code === $code)
+                return $survey->getOptions();
+                
+        }
+        return null;
     }
 }
