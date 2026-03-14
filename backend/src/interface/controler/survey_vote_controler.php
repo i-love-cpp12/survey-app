@@ -8,6 +8,7 @@ require_once(__DIR__ . "/../../application/DTO/vote_DTO.php");
 require_once(__DIR__ . "/../../application/DTO/has_voted_DTO.php");
 require_once(__DIR__ . "/../../infrastructure/http/request.php");
 require_once(__DIR__ . "/../../infrastructure/http/exception_handler.php");
+require_once(__DIR__ . "/../../shared/exception/exception.php");
 
 use app\application\service\SurveyVoteService;
 use app\application\DTO\HasVotedDTO;
@@ -16,6 +17,7 @@ use app\domain\service\SurveyHasVotedService;
 use app\infrastructure\http\ExceptionHandler;
 use app\infrastructure\http\Request;
 use app\infrastructure\http\Respond;
+use app\shared\exception\ValidationException;
 use Throwable;
 
 class SurveyVoteControler
@@ -29,17 +31,20 @@ class SurveyVoteControler
     {
         $body = (new Request())->bodyJSON();
         $optionId = $body["optionId"] ?? null;
-        //chech type
         $rowToken = $_SERVER["HTTP_USER_AGENT"] . $_SERVER["REMOTE_ADDR"];
 
-        $DTO = new VoteDTO(
-            $surevyCode,
-            $optionId,
-            $rowToken
-        );
-
+        
         try
         {
+            if($optionId !== null && !is_int($optionId))
+                throw new ValidationException("optionId must be type of int");
+
+            $DTO = new VoteDTO(
+                $surevyCode,
+                $optionId,
+                $rowToken
+            );
+
             $this->surveyVoteService->execute($DTO);
         }
         catch(Throwable $e)

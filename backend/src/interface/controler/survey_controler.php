@@ -12,6 +12,7 @@ require_once(__DIR__ . "/../../infrastructure/http/exception_handler.php");
 require_once(__DIR__ . "/../../domain/entity/survey.php");
 require_once(__DIR__ . "/../../domain/entity/option.php");
 require_once(__DIR__ . "/../../application/DTO/create_survey_DTO.php");
+require_once(__DIR__ . "/../../shared/exception/exception.php");
 
 use app\application\service\SurveyCreateService;
 use app\application\service\SurveyGetAllService;
@@ -23,6 +24,7 @@ use app\infrastructure\http\ExceptionHandler;
 use app\infrastructure\http\Request;
 use app\infrastructure\http\Respond;
 use app\application\DTO\CreateSurveyDTO;
+use app\shared\exception\ValidationException;
 use Throwable;
 
 class SurveyControler
@@ -94,14 +96,34 @@ class SurveyControler
     public function create(): void
     {
         $body = (new Request)->bodyJSON();
+        
         $code = $body["code"] ?? null;
         $question = $body["question"] ?? null;
         $options = $body["options"] ?? null;
-        //check types
-        $DTO = new CreateSurveyDTO($code, $question, $options);
 
         try
         {
+
+            if($code !== null && !is_string($code))
+                throw new ValidationException("code must be type string");
+
+            if($question !== null && !is_string($question))
+                throw new ValidationException("question must be type string");
+
+            if($options !== null && !is_array($options))
+                throw new ValidationException("options must be type array");
+
+            if($options !== null)
+            {
+                foreach($options as $option)
+                {
+                    if(!is_string($option))
+                        throw new ValidationException("options elements must be type string");
+                }
+            }
+            
+
+            $DTO = new CreateSurveyDTO($code, $question, $options);
             $this->surveyCreateService->execute($DTO);
         }
         catch(Throwable $e)
