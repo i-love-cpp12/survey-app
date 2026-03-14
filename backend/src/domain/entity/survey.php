@@ -101,10 +101,6 @@ class Survey
         return null;
     }
 
-    public function addOption(Option $option): void
-    {
-        $this->options[] = $option;
-    }
     public function vote(int $optionId): void
     {
         $optionIndex = null;

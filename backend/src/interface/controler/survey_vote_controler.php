@@ -6,12 +6,13 @@ namespace app\interface\controler;
 require_once(__DIR__ . "/../../application/service/survey_vote_service.php");
 require_once(__DIR__ . "/../../application/DTO/voteDTO.php");
 require_once(__DIR__ . "/../../infrastructure/http/request.php");
+require_once(__DIR__ . "/../../infrastructure/http/exception_handler.php");
 
 use app\application\service\SurveyVoteService;
 use app\application\DTO\VoteDTO;
+use app\infrastructure\http\ExceptionHandler;
 use app\infrastructure\http\Request;
 use app\infrastructure\http\Respond;
-use app\shared\exception\SurveyException;
 use Throwable;
 
 class SurveyVoteControler
@@ -37,17 +38,11 @@ class SurveyVoteControler
         }
         catch(Throwable $e)
         {
-            $this->handleException($e);
+            ExceptionHandler::handle($e);
         }
 
         Respond::json(["error" => ""]);
 
         
-    }
-    private function handleException(Throwable $e): void
-    {
-        if($e instanceof SurveyException)
-            Respond::json(["error" => $e->getMessage()], 400);
-        throw $e;
     }
 }

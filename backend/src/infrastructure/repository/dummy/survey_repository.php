@@ -58,6 +58,7 @@ class DummySurveyRepository implements SurveyRepository
         }
         return null;
     }
+    
     public function codeExists(string $code): bool
     {
         $code = strtoupper($code);

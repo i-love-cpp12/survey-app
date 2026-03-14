@@ -40,7 +40,7 @@ class Router
             if(!preg_match($routePattern, $uri, $matches))
                 continue;
             
-            if(count($matches))
+            if(count($matches) > 1)
                 $matches = [$matches[1]];
 
             $handler(...$matches);
