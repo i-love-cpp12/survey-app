@@ -11,11 +11,7 @@ use app\application\service\SurveyVoteService;
 use app\application\DTO\VoteDTO;
 use app\infrastructure\http\Request;
 use app\infrastructure\http\Respond;
-use app\shared\exception\AlreadyVotedException;
-use app\shared\exception\OptionNotFoundException;
-use app\shared\exception\SurveyNotFoundException;
-use app\shared\exception\MustNotBeNullException;
-use Exception;
+use app\shared\exception\SurveyException;
 use Throwable;
 
 class SurveyVoteControler
@@ -41,24 +37,17 @@ class SurveyVoteControler
         }
         catch(Throwable $e)
         {
-            $this->handleException($e, $DTO);
+            $this->handleException($e);
         }
 
-        //message to do | successs
         Respond::json(["error" => ""]);
 
         
     }
-    private function handleException(Throwable $e, VoteDTO $DTO): void
+    private function handleException(Throwable $e): void
     {
-        if($e instanceof MustNotBeNullException)
-            Respond::json(["error" => "Option id must be provided"], 422);
-        if($e instanceof SurveyNotFoundException)
-            Respond::json(["error" => "Survey with code: $DTO->surveyCode not found"], 404);
-        if($e instanceof OptionNotFoundException)
-            Respond::json(["error" => "Survey with code: $DTO->surveyCode have not have option with Id: " . $DTO->optionId], 404);
-        if($e instanceof AlreadyVotedException)
-            Respond::json(["error" => "You can not vote in the same survey twice or more: $DTO->surveyCode"], 400);
+        if($e instanceof SurveyException)
+            Respond::json(["error" => $e->getMessage()], 400);
         throw $e;
     }
 }

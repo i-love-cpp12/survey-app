@@ -29,17 +29,17 @@ class SurveyVoteService
     public function execute(VoteDTO $DTO): void
     {
         if($DTO->optionId === null)
-            throw new MustNotBeNullException("optionId was not provieded");
+            throw new MustNotBeNullException("option id was not provieded");
 
         $survey = $this->surveyRepo->findSurveyByCode($DTO->surveyCode);
 
         if(!$survey || $survey->getId() === null)
-            throw new SurveyNotFoundException("Survey with code: " . $DTO->surveyCode . "does not exists");
+            throw new SurveyNotFoundException("Survey with code: " . $DTO->surveyCode . " does not exists");
 
         $user = new User(new Token($DTO->unhashedToken));
 
         if($survey->findOption($DTO->optionId) === null)
-            throw new OptionNotFoundException("Option with id: " . $DTO->optionId . " not found in surevy with code" . $survey->code);
+            throw new OptionNotFoundException("Option with id: " . $DTO->optionId . " not found in survey with code: " . $survey->code);
 
         if($this->voteRepo->hasVoted($survey->code, $user))
             throw new AlreadyVotedException("User with token: " . $user->token->value . "already voted in survey with code: " . $survey->code);
