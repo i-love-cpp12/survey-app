@@ -24,6 +24,8 @@ class Option
 
         if($voteCount < 0)
             throw new InvalidArgumentException("option vote count can not be negative");
+
+        $this->voteCount = $voteCount;
     }
     public function getVotesCount(): int
     {

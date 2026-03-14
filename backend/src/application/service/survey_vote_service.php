@@ -33,9 +33,6 @@ class SurveyVoteService
 
         $survey = $this->surveyRepo->findSurveyByCode($DTO->surveyCode);
 
-        // echo json_encode([$survey->getOptions(), $survey->findOption($DTO->optionId)]);
-        // exit();
-
         if(!$survey || $survey->getId() === null)
             throw new SurveyNotFoundException("Survey with code: " . $DTO->surveyCode . "does not exists");
 

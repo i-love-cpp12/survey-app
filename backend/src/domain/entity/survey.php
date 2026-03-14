@@ -112,10 +112,13 @@ class Survey
         foreach($this->options as $i => $option)
         {
             if($option->id === $optionId)
+            {
                 $optionIndex = $i;
+                break;
+            }
         }
 
-        if(!$optionIndex)
+        if($optionIndex === null)
             throw new OptionNotFoundException("Option id not found");
 
         $this->options[$optionIndex]->addVote();

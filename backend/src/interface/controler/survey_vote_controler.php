@@ -49,7 +49,7 @@ class SurveyVoteControler
 
         
     }
-    private function handleException(Exception $e, VoteDTO $DTO): void
+    private function handleException(Throwable $e, VoteDTO $DTO): void
     {
         if($e instanceof MustNotBeNullException)
             Respond::json(["error" => "Option id must be provided"], 422);
