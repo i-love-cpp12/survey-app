@@ -29,7 +29,7 @@ class SurveyVoteControler
     {
         $body = (new Request())->bodyJSON();
         $optionId = $body["optionId"] ?? null;
-
+        //chech type
         $rowToken = $_SERVER["HTTP_USER_AGENT"] . $_SERVER["REMOTE_ADDR"];
 
         $DTO = new VoteDTO(

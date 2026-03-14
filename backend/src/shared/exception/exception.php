@@ -6,6 +6,7 @@ use \Exception;
 
 class SurveyException extends Exception {}
 
+class SurveyAlreadyExists extends SurveyException {}
 class SurveyNotFoundException extends SurveyException {}
 class OptionNotFoundException extends SurveyException {}
 class AlreadyVotedException extends SurveyException {}

@@ -29,6 +29,7 @@ class DummySurveyRepository implements SurveyRepository
             ]))
         ];
     }
+    //fix so when option id == null then update and if survey id == null add the id
     public function save(Survey $survey): void
     {
         if($survey->getId() === null)

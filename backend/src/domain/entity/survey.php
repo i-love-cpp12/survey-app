@@ -27,6 +27,7 @@ class Survey
     /** @var Option[] */
     private array $options;
 
+    /** @param Option[] $options */
     function __construct(?int $id, string $question, string $code, array $options, bool $isActive = true)
     {
         if(empty($question))
@@ -56,8 +57,10 @@ class Survey
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
+        if($id === null)
+            return;
         if($this->id)
             throw new LogicException("Id is already set");
         if($id < 0)
@@ -100,7 +103,10 @@ class Survey
         }
         return null;
     }
-
+    public function addOption(Option $option): void
+    {
+        $this->options[] = $option;
+    }
     public function vote(int $optionId): void
     {
         $optionIndex = null;

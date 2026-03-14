@@ -9,12 +9,12 @@ use InvalidArgumentException;
 
 class Option
 {
-    public readonly int $id;
+    public readonly ?int $id;
     readonly public string $value;
     private int $voteCount;
-    function __construct(int $id, string $value, int $voteCount = 0)
+    function __construct(?int $id, string $value, int $voteCount = 0)
     {
-        if($id < 0)
+        if($id !== null && $id < 0)
             throw new InvalidArgumentException("option vote id can not be negative");
         if(empty($value))
             throw new InvalidArgumentException("option value can not be empty");
