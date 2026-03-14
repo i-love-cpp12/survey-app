@@ -5,8 +5,7 @@ namespace app\application\service;
 
 require_once(__DIR__ . "/../../domain/repository/survey_repository.php");
 require_once(__DIR__ . "/../../domain/repository/survey_vote_repository.php");
-require_once(__DIR__ . "/../DTO/voteDTO.php");
-require_once(__DIR__ . "/../DTO/voteDTO.php");
+require_once(__DIR__ . "/../DTO/vote_DTO.php");
 require_once(__DIR__ . "/../../shared/exception/exception.php");
 
 
@@ -42,7 +41,7 @@ class SurveyVoteService
             throw new OptionNotFoundException("Option with id: " . $DTO->optionId . " not found in survey with code: " . $survey->code);
 
         if($this->voteRepo->hasVoted($survey->code, $user))
-            throw new AlreadyVotedException("User with token: " . $user->token->value . "already voted in survey with code: " . $survey->code);
+            throw new AlreadyVotedException("User with token: " . $user->token->value . " already voted in survey with code: " . $survey->code);
 
         $vote = new Vote(null, $survey->getId(), $DTO->optionId, $user);
 
