@@ -13,7 +13,7 @@ class ExceptionHandler
     static public function handle(Throwable $e): void
     {
         if($e instanceof SurveyException)
-            Respond::json(["error" => $e->getMessage()], 400);
+            Respond::json(["error" => $e->getMessage()], $e->getCode());
         throw $e;
     }
 }

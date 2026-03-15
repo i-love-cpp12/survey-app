@@ -5,31 +5,28 @@ namespace app\application\service;
 
 require_once(__DIR__ . "/../DTO/create_survey_DTO.php");
 require_once(__DIR__ . "/../../domain/repository/survey_repository.php");
+require_once(__DIR__ . "/../../domain/service/survey_generate_code_service.php");
 require_once(__DIR__ . "/../../shared/exception/exception.php");
 
 use app\application\DTO\CreateSurveyDTO;
 use app\domain\entity\Option;
 use app\domain\entity\Survey;
 use app\domain\repository\SurveyRepository;
-use app\shared\exception\SurveyAlreadyExists;
+use app\domain\service\SurveyGenerateCodeService;
 use app\shared\exception\ValidationException;
 
 class SurveyCreateService
 {
-    function __construct(private SurveyRepository $surveyRepo){}
+    static int $codeLenght = 7;
+    function __construct(private SurveyRepository $surveyRepo, private SurveyGenerateCodeService $surveyGenerateCodeService)
+    {}
     public function execute(CreateSurveyDTO $DTO): void
     {
-        if(!$DTO->code)
-            throw new ValidationException("Survey code can not be empty");
-
         if(!$DTO->question)
             throw new ValidationException("Survey question can not be empty");
 
         if($DTO->options === null || count($DTO->options) === 0)
             throw new ValidationException("Survey options can not be empty");
-
-        if($this->surveyRepo->codeExists($DTO->code))
-            throw new SurveyAlreadyExists("Survey with code: $DTO->code already exists");
 
         foreach($DTO->options as $option)
         {
@@ -41,7 +38,7 @@ class SurveyCreateService
         {
             $options[] = new Option(null, $option);
         }
-        $survey = new Survey(null, $DTO->question, $DTO->code, $options);
+        $survey = new Survey(null, $DTO->question, $this->surveyGenerateCodeService->execute(self::$codeLenght), $options);
 
         $this->surveyRepo->save($survey);
     }

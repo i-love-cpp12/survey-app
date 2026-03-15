@@ -97,16 +97,11 @@ class SurveyControler
     {
         $body = (new Request)->bodyJSON();
         
-        $code = $body["code"] ?? null;
         $question = $body["question"] ?? null;
         $options = $body["options"] ?? null;
 
         try
         {
-
-            if($code !== null && !is_string($code))
-                throw new ValidationException("code must be type string");
-
             if($question !== null && !is_string($question))
                 throw new ValidationException("question must be type string");
 
@@ -123,7 +118,7 @@ class SurveyControler
             }
             
 
-            $DTO = new CreateSurveyDTO($code, $question, $options);
+            $DTO = new CreateSurveyDTO($question, $options);
             $this->surveyCreateService->execute($DTO);
         }
         catch(Throwable $e)

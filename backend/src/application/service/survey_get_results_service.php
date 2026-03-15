@@ -7,9 +7,8 @@ require_once(__DIR__ . "/../../domain/repository/survey_repository.php");
 require_once(__DIR__ . "/../../domain/entity/survey.php");
 require_once(__DIR__ . "/../../shared/exception/exception.php");
 
-use app\domain\entity\Survey;
 use app\domain\repository\SurveyRepository;
-use app\shared\exception\SurveyNotFoundException;
+use app\shared\exception\NotFoundException;
 
 class SurveyGetResultsService
 {
@@ -20,7 +19,7 @@ class SurveyGetResultsService
     {
         $results = $this->surveyRepo->getSurveyResults($code);
         if($results === null)
-            throw new SurveyNotFoundException("Survey with code: $code does not exists");
+            throw new NotFoundException("Survey with code: $code does not exists");
         return $results;
     }
 }

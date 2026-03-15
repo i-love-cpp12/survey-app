@@ -20,6 +20,7 @@ use app\application\service\SurveyGetAllService;
 use app\application\service\SurveyGetByCodeService;
 use app\application\service\SurveyGetResultsService;
 use app\application\service\SurveyVoteService;
+use app\domain\service\SurveyGenerateCodeService;
 use app\domain\service\SurveyHasVotedService;
 use app\infrastructure\http\Request;
 use app\interface\router\Router;
@@ -37,7 +38,8 @@ $hasVotedService = new SurveyHasVotedService($voteRepository);
 $getByCodeService = new SurveyGetByCodeService($surveyRepository);
 $getAllService = new SurveyGetAllService($surveyRepository);
 $getResultsService = new SurveyGetResultsService($surveyRepository);
-$surveyCreateService = new SurveyCreateService($surveyRepository);
+$generateCodeService = new SurveyGenerateCodeService($surveyRepository);
+$surveyCreateService = new SurveyCreateService($surveyRepository, $generateCodeService);
 
 $voteControler = new SurveyVoteControler($voteService, $hasVotedService);
 $surveyControler = new SurveyControler($getByCodeService, $getAllService, $getResultsService, $surveyCreateService);
