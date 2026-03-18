@@ -9,4 +9,4 @@ use app\infrastructure\http\Respond;
 
 $conn = DB::getConnection();
 
-Respond::json($conn->query("SELECT * FROM test;")->fetchAll());
+Respond::json($conn->query("SELECT * FROM survey;")->fetchAll());
