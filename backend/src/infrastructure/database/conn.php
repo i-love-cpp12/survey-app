@@ -1,33 +1,43 @@
 <?php
+declare(strict_types=1);
 
 namespace app\infrastructure\database;
 
 require(__DIR__ . "/../../../config/database.php");
 
 use \PDO;
+use \Exception;
 use DBConfig;
+use PDOException;
 
 class DB
 {
-    private ?PDO $conn = null;
+    private PDO $conn;
     private static ?DB $instance = null;
 
-    private function __consturct()
+    private function __construct()
     {
 
-        $host = DBConfig::config["host"];
-        $dbname = DBConfig::config["dbname"];
-        $user = DBConfig::config["user"];
-        $password = DBConfig::config["password"];
+        $host = DBConfig::$config["host"];
+        $dbname = DBConfig::$config["dbname"];
+        $user = DBConfig::$config["user"];
+        $password = DBConfig::$config["password"];
 
-        $this->conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
+        try
+        {
+            $this->conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
+        catch(PDOException $e)
+        {
+            throw new Exception("Connection couldn't be made");
+        }
     }
     public static function getConnection(): PDO
     {
         if(!self::$instance)
-        {
             self::$instance = new DB();
-        }
+        
         return self::$instance->conn;
     }
 
