@@ -30,7 +30,7 @@ class DB
         }
         catch(PDOException $e)
         {
-            throw new Exception("Connection couldn't be made");
+            throw new Exception("Connection couldn't be established");
         }
     }
     public static function getConnection(): PDO
