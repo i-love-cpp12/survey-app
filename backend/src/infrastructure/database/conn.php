@@ -18,10 +18,10 @@ class DB
     private function __construct()
     {
 
-        $host = DBConfig::$config["host"];
-        $dbname = DBConfig::$config["dbname"];
-        $user = DBConfig::$config["user"];
-        $password = DBConfig::$config["password"];
+        $host = DBConfig::$host;
+        $dbname = DBConfig::$dbname;
+        $user = DBConfig::$user;
+        $password = DBConfig::$password;
 
         try
         {

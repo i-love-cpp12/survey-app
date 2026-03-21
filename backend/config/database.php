@@ -2,10 +2,8 @@
 
 class DBConfig
 {
-    public static $config = [
-        "host" => "localhost",
-        "dbname" => "survey",
-        "user" => "root",
-        "password" => ""
-    ];
+    public static $host = "localhost";
+    public static $dbname = "survey";
+    public static $user = "root";
+    public static $password = "";
 }
