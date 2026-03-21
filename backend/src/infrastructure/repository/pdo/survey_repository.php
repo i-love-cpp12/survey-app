@@ -1,0 +1,142 @@
+<?php
+declare(strict_types=1);
+namespace app\infrastructure\repository\pdo;
+
+require_once(__DIR__ . "/../../../domain/repository/survey_repository.php");
+require_once(__DIR__ . "/../../../domain/entity/survey.php");
+
+use app\domain\entity\Option;
+use app\domain\entity\Survey;
+use app\domain\repository\SurveyRepository as SurveyRepositoryInterface;
+use PDO;
+
+class SurveyRepository implements SurveyRepositoryInterface
+{
+    private array $surveys;
+    private PDO $conn;
+
+    function __construct(PDO $PDOConnection)
+    {
+        $this->surveys = [
+            (new Survey(1, "Pierwsza ankieta", "AAAAA", [
+                (new Option(1, "opt1", 1)),
+                (new Option(2, "opt2", 10)),
+                (new Option(3, "opt3", 0))
+            ])),
+            (new Survey(2, "druga ankieta", "BBBBB", [
+                (new Option(4, "opt2.1", 1)),
+                (new Option(5, "opt2.2", 10)),
+                (new Option(6, "opt2.3", 0))
+            ]))
+        ];
+        $this->conn = $PDOConnection;
+    }
+    //fix so when option id == null then update and if survey id == null add the id
+    public function save(Survey $survey): void
+    {
+        if($survey->getId() === null)
+        {
+            $this->surveys[] = $survey;
+            return;
+        }
+
+        foreach($this->surveys as $i => $mySurvey)
+        {
+            if($mySurvey->getId() === $survey->getId())
+            {
+                $this->surveys[$i] = $survey;
+                return;
+            }
+        }
+
+        $this->surveys[] = $survey;
+    }
+    public function findSurveyByCode(string $code): ?Survey
+    {
+        $code = strtoupper($code);
+        foreach($this->surveys as $survey)
+        {
+            if($survey->code === $code)
+                return $survey;
+        }
+        return null;
+    }
+
+    public function codeExists(string $code): bool
+    {
+        $code = strtoupper($code);
+        foreach($this->surveys as $survey)
+        {
+            if($survey->code === $code)
+                return true;
+        }
+        return false;
+    }
+
+    /** @return Survey[] */
+    public function getSurveys(): array
+    {
+        $data = $this->conn->query(
+            "SELECT survey.survey_id, survey_code, question, is_active, option_id, `option`.`value` as option_value, votes
+            FROM survey
+            LEFT JOIN `option` USING(survey_id);"
+        )->fetchAll(PDO::FETCH_ASSOC);
+
+        $surveysRaw = [];
+        foreach($data as $row)
+        {
+            $id = $row["survey_id"];
+            if(!isset($surveysRaw[$id]))
+            {
+                $surveysRaw[$id] = [
+                    "survey_id" => $id,
+                    "survey_code" => $row["survey_code"],
+                    "question" => $row["question"],
+                    "options" => [],
+                    "is_active" => $row["is_active"]
+                ];
+            }
+            if($row["option_id"] !== null)
+            {
+                $surveysRaw[$id]["options"][] = [
+                    "option_id" => $row["option_id"],
+                    "value" => $row["option_value"],
+                    "votes" => $row["votes"],
+                ];
+            }
+        }
+
+        $surveys = [];
+
+        foreach($surveysRaw as $surveyId => $surveyBody)
+        {
+            $options = [];
+            foreach($surveyBody["options"] as $option)
+            {
+                $options[] = new Option($option["option_id"], $option["value"], $option["votes"]);
+            }
+            $surveys[] = new Survey($surveyId, $surveyBody["question"], $surveyBody["survey_code"], $options, boolval($surveyBody["is_active"]));
+        }
+        return $surveys;
+    }
+
+    /** @return Option[] */
+    public function getSurveyResults(string $code): array | null
+    {
+        $code = strtoupper($code);
+
+        $stmt = $this->conn->prepare("SELECT `option`.option_id AS id, `option`.`value` AS _value, `option`.votes AS votes FROM `option` JOIN survey USING(survey_id) WHERE survey.survey_code = :code;");
+
+        $stmt->execute(["code" => $code]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = [];
+
+        foreach($data as $row)
+        {
+            $result[] = new Option($row["id"], $row["_value"], $row["votes"]);
+        }
+
+        return $result ?: null;
+    }
+}

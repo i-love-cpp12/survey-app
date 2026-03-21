@@ -13,6 +13,7 @@ require_once(__DIR__ . "/../src/domain/service/survey_has_voted_service.php");
 require_once(__DIR__ . "/../src/infrastructure/repository/dummy/survey_repository.php");
 require_once(__DIR__ . "/../src/infrastructure/repository/dummy/survey_vote_repository.php");
 require_once(__DIR__ . "/../src/infrastructure/repository/pdo/survey_vote_repository.php");
+require_once(__DIR__ . "/../src/infrastructure/repository/pdo/survey_repository.php");
 
 require_once(__DIR__ . "/../src/infrastructure/http/request.php");
 require_once(__DIR__ . "/../src/infrastructure/database/conn.php");
@@ -31,6 +32,7 @@ use app\interface\router\Router;
 use app\infrastructure\repository\dummy\DummySurveyVoteRepository;
 use app\infrastructure\repository\dummy\DummySurveyRepository;
 use app\infrastructure\repository\pdo\SurveyVoteRepository;
+use app\infrastructure\repository\pdo\SurveyRepository;
 use app\interface\controler\SurveyControler;
 use app\interface\controler\SurveyVoteControler;
 
@@ -46,7 +48,7 @@ catch(PDOException $e)
 }
 
 $voteRepository = new SurveyVoteRepository($PDOConnection);
-$surveyRepository = new DummySurveyRepository();
+$surveyRepository = new SurveyRepository($PDOConnection);
 
 $voteService = new SurveyVoteService($surveyRepository, $voteRepository);
 $hasVotedService = new SurveyHasVotedService($voteRepository);

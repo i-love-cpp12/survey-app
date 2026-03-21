@@ -8,8 +8,7 @@ require_once(__DIR__ . "/../../shared/exception/exception.php");
 
 
 use app\domain\entity\Option;
-
-use app\shared\exception\OptionNotFoundException;
+use app\shared\exception\NotFoundException;
 use LogicException;
 use InvalidArgumentException;
 
@@ -121,7 +120,7 @@ class Survey
         }
 
         if($optionIndex === null)
-            throw new OptionNotFoundException("Option id not found");
+            throw new NotFoundException("Option id not found");
 
         $this->options[$optionIndex]->addVote();
     }
