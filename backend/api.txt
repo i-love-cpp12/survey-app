@@ -1,6 +1,6 @@
-GET api/survey | get all surveys | done
-GET api/survey/{code} | get survey by code | done 
-GET api/survey/{code}/results | get survey resutls by code | done
-GET api/survey/{code}/voted | has voted in survey | done
-POST api/survey/create | create survey 
-POST api/survey/{code}/vote | vote in survey | done
+GET /survey | get all surveys
+GET /survey/{code} | get survey by code
+GET /survey/{code}/results | get survey resutls by code
+GET /survey/{code}/voted | has voted in survey
+POST /survey/create | create survey
+POST /survey/{code}/vote | vote in survey

@@ -21,7 +21,7 @@ class Router
         $this->routes["POST"][$path] = $handler;
     }
 
-    public function exectute(string $method, string $uri): void
+    public function execute(string $method, string $uri): void
     {
         $method = strtoupper($method);
 

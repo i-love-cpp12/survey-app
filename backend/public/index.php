@@ -12,8 +12,10 @@ require_once(__DIR__ . "/../src/domain/service/survey_has_voted_service.php");
 
 require_once(__DIR__ . "/../src/infrastructure/repository/dummy/survey_repository.php");
 require_once(__DIR__ . "/../src/infrastructure/repository/dummy/survey_vote_repository.php");
+require_once(__DIR__ . "/../src/infrastructure/repository/pdo/survey_vote_repository.php");
 
 require_once(__DIR__ . "/../src/infrastructure/http/request.php");
+require_once(__DIR__ . "/../src/infrastructure/database/conn.php");
 
 use app\application\service\SurveyCreateService;
 use app\application\service\SurveyGetAllService;
@@ -22,15 +24,28 @@ use app\application\service\SurveyGetResultsService;
 use app\application\service\SurveyVoteService;
 use app\domain\service\SurveyGenerateCodeService;
 use app\domain\service\SurveyHasVotedService;
+use app\infrastructure\database\DBConnection;
+use app\infrastructure\http\ExceptionHandler;
 use app\infrastructure\http\Request;
 use app\interface\router\Router;
 use app\infrastructure\repository\dummy\DummySurveyVoteRepository;
 use app\infrastructure\repository\dummy\DummySurveyRepository;
+use app\infrastructure\repository\pdo\SurveyVoteRepository;
 use app\interface\controler\SurveyControler;
 use app\interface\controler\SurveyVoteControler;
 
 $router = new Router();
-$voteRepository = new DummySurveyVoteRepository();
+
+try
+{
+    $PDOConnection = DBConnection::getConnection();
+}
+catch(PDOException $e)
+{
+    ExceptionHandler::handle($e);
+}
+
+$voteRepository = new SurveyVoteRepository($PDOConnection);
 $surveyRepository = new DummySurveyRepository();
 
 $voteService = new SurveyVoteService($surveyRepository, $voteRepository);
@@ -52,4 +67,4 @@ $router->post("backend/survey/{code}/vote", [$voteControler, 'vote']);
 $router->post("backend/survey/create", [$surveyControler, 'create']);
 
 $request = new Request();
-$router->exectute($request->method, $request->uri);
+$router->execute($request->method, $request->uri);
