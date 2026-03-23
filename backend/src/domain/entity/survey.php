@@ -35,8 +35,6 @@ class Survey
             throw new InvalidArgumentException("Survey question can not be empty");
         if(!self::validateCode($code))
             throw new InvalidArgumentException("Survey code must be (" . self::$minCodeSize . " - " . self::$maxCodeSize . ") long and only contain characters from this list(".self::$allowedCodeChars."), but $code were given");
-        if(empty($options))
-            throw new InvalidArgumentException("Survey has to have options");
         foreach($options as $option)
         {
             if(!$option instanceof Option)

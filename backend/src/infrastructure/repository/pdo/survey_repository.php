@@ -55,15 +55,33 @@ class SurveyRepository implements SurveyRepositoryInterface
 
         $this->surveys[] = $survey;
     }
+    
     public function findSurveyByCode(string $code): ?Survey
     {
-        $code = strtoupper($code);
-        foreach($this->surveys as $survey)
+        $stmt = $this->conn->prepare(
+            "SELECT survey.survey_id, survey_code, question, is_active, option_id, `option`.`value` as option_value, votes as votes
+            FROM survey
+            LEFT JOIN `option` USING(survey_id)
+            WHERE survey_code = ?;"
+        );
+
+        $stmt->execute([$code]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $survey = ["survey_id" => $data[0]["survey_id"], "survey_code" => $data[0]["survey_code"], "survey_question" => $data[0]["question"], "survey_is_active" => boolval($data[0]["is_active"]), "options" => []];
+        foreach($data as $row)
         {
-            if($survey->code === $code)
-                return $survey;
+            if($row["option_id"] === null)
+                break;    
+            
+            $survey["options"][] = [
+                "option_id" => $row["option_id"],
+                "option_value" => $row["option_value"],
+                "option_votes" => $row["votes"]
+            ];
         }
-        return null;
+
+        return SurveyMapper::map($survey);
     }
 
     public function codeExists(string $code): bool
@@ -79,7 +97,7 @@ class SurveyRepository implements SurveyRepositoryInterface
     public function getSurveys(): array
     {
         $data = $this->conn->query(
-            "SELECT survey.survey_id, survey_code, question, is_active, option_id, `option`.`value` as option_value, votes
+            "SELECT survey.survey_id as survey_id, survey_code, question, is_active, option_id, `option`.`value` as option_value, votes
             FROM survey
             LEFT JOIN `option` USING(survey_id);"
         )->fetchAll(PDO::FETCH_ASSOC);

@@ -15,6 +15,6 @@ class SurveyMapper
         {
             $options[] = OptionMapper::map($option);   
         }
-        return new Survey($data["survey_id"] ?? null, $data["survey_question"], $data["survey_code"], $options, $data["survey_is_active"]);
+        return new Survey($data["survey_id"] ?? null, $data["survey_question"], $data["survey_code"], $options, $data["survey_is_active"] ?? null);
     }
 }
