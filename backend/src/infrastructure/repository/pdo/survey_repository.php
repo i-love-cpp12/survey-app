@@ -5,11 +5,13 @@ namespace app\infrastructure\repository\pdo;
 require_once(__DIR__ . "/../../../domain/repository/survey_repository.php");
 require_once(__DIR__ . "/../../../domain/entity/survey.php");
 require_once(__DIR__ . "/../mapper/option_mapper.php");
+require_once(__DIR__ . "/../mapper/survey_mapper.php");
 
 use app\domain\entity\Option;
 use app\domain\entity\Survey;
 use app\domain\repository\SurveyRepository as SurveyRepositoryInterface;
 use app\infrastructure\repository\mapper\OptionMapper;
+use app\infrastructure\repository\mapper\SurveyMapper;
 use PDO;
 
 class SurveyRepository implements SurveyRepositoryInterface
@@ -93,9 +95,9 @@ class SurveyRepository implements SurveyRepositoryInterface
                 $surveysRaw[$id] = [
                     "survey_id" => $id,
                     "survey_code" => $row["survey_code"],
-                    "question" => $row["question"],
+                    "survey_question" => $row["question"],
                     "options" => [],
-                    "is_active" => $row["is_active"]
+                    "survey_is_active" => boolval($row["is_active"])
                 ];
             }
             if($row["option_id"] !== null)
@@ -112,12 +114,7 @@ class SurveyRepository implements SurveyRepositoryInterface
 
         foreach($surveysRaw as $surveyId => $surveyBody)
         {
-            $options = [];
-            foreach($surveyBody["options"] as $option)
-            {
-                $options[] = OptionMapper::map($option);
-            }
-            $surveys[] = new Survey($surveyId, $surveyBody["question"], $surveyBody["survey_code"], $options, boolval($surveyBody["is_active"]));
+            $surveys[] = SurveyMapper::map(["survey_id" => $surveyId, ...$surveyBody]);
         }
         return $surveys;
     }
