@@ -68,13 +68,11 @@ class SurveyRepository implements SurveyRepositoryInterface
 
     public function codeExists(string $code): bool
     {
-        $code = strtoupper($code);
-        foreach($this->surveys as $survey)
-        {
-            if($survey->code === $code)
-                return true;
-        }
-        return false;
+        $stmt = $this->conn->prepare("SELECT 1 FROM survey WHERE survey_code = ?;");
+
+        $stmt->execute([$code]);
+
+        return !$stmt->fetchColumn();
     }
 
     /** @return Survey[] */
