@@ -99,9 +99,12 @@ class SurveyControler
         
         $question = $body["question"] ?? null;
         $options = $body["options"] ?? null;
-
+        
+        $generatedCode = "";
         try
         {
+            if($body === null)
+                throw new ValidationException("request body must be provided");
             if($question !== null && !is_string($question))
                 throw new ValidationException("question must be type string");
 
@@ -117,16 +120,16 @@ class SurveyControler
                 }
             }
             
-
+            
             $DTO = new CreateSurveyDTO($question, $options);
-            $this->surveyCreateService->execute($DTO);
+            $generatedCode = $this->surveyCreateService->execute($DTO);
         }
         catch(Throwable $e)
         {
             ExceptionHandler::handle($e);
         }
 
-        Respond::json(["error" => "", $this->surveyGetAllService->execute()]);
+        Respond::json(["error" => "", "data" => ["survey_code" => $generatedCode]]);
     }
     /** @param Option[] */
     private function optionsToPayload(array $options): array

@@ -13,6 +13,7 @@ use app\domain\repository\SurveyRepository as SurveyRepositoryInterface;
 use app\infrastructure\repository\mapper\OptionMapper;
 use app\infrastructure\repository\mapper\SurveyMapper;
 use PDO;
+use PDOException;
 
 class SurveyRepository implements SurveyRepositoryInterface
 {
@@ -35,25 +36,52 @@ class SurveyRepository implements SurveyRepositoryInterface
         ];
         $this->conn = $PDOConnection;
     }
-    //fix so when option id == null then update and if survey id == null add the id
+
     public function save(Survey $survey): void
     {
+        // if($survey->getId() === null)
+        // {
+        //     $this->surveys[] = $survey;
+        //     return;
+        // }
+
+        // foreach($this->surveys as $i => $mySurvey)
+        // {
+        //     if($mySurvey->getId() === $survey->getId())
+        //     {
+        //         $this->surveys[$i] = $survey;
+        //         return;
+        //     }
+        // }
+
+        // $this->surveys[] = $survey;
         if($survey->getId() === null)
         {
-            $this->surveys[] = $survey;
+            
+
+            $this->conn->beginTransaction();
+            try
+            {
+                $stmt = $this->conn->prepare("INSERT INTO survey (survey_code, question) VALUES (:code, :question);");
+                $stmt->execute(["code" => $survey->code, "question" => $survey->question]);
+
+                $survey->setId(intval($this->conn->lastInsertId()));
+                
+                foreach($survey->getOptions() as $option)
+                {
+                    $stmt = $this->conn->prepare("INSERT INTO `option` (survey_id, `value`, votes) VALUES (:id, :option_value, :votes)");
+                    $stmt->execute(["id" => $survey->getId(), "option_value" => $option->value, "votes" => $option->getVotesCount()]);
+                }
+                $this->conn->commit();
+                
+            }
+            catch(PDOException $e)
+            {
+                $this->conn->rollBack();
+                throw $e;
+            }
             return;
         }
-
-        foreach($this->surveys as $i => $mySurvey)
-        {
-            if($mySurvey->getId() === $survey->getId())
-            {
-                $this->surveys[$i] = $survey;
-                return;
-            }
-        }
-
-        $this->surveys[] = $survey;
     }
     
     public function findSurveyByCode(string $code): ?Survey
@@ -90,7 +118,7 @@ class SurveyRepository implements SurveyRepositoryInterface
 
         $stmt->execute([$code]);
 
-        return !$stmt->fetchColumn();
+        return $stmt->fetchColumn() !== false;
     }
 
     /** @return Survey[] */

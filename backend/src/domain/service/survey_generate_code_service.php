@@ -20,6 +20,7 @@ class SurveyGenerateCodeService
         if(!Survey::validateCodeLenght($codeLenght))
             throw new ValidationException("Code must be (" . Survey::$minCodeSize . " - " . Survey::$maxCodeSize . ") long");
         $generatedCode = "";
+
         do
         {
             $generatedCode = self::generateCode($codeLenght);

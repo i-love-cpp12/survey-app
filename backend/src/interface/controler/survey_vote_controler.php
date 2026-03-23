@@ -36,6 +36,8 @@ class SurveyVoteControler
         
         try
         {
+            if($body === null)
+                throw new ValidationException("body must be provided");
             if($optionId !== null && !is_int($optionId))
                 throw new ValidationException("optionId must be type of int");
 

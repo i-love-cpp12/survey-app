@@ -20,7 +20,7 @@ class SurveyCreateService
     static int $codeLenght = 7;
     function __construct(private SurveyRepository $surveyRepo, private SurveyGenerateCodeService $surveyGenerateCodeService)
     {}
-    public function execute(CreateSurveyDTO $DTO): void
+    public function execute(CreateSurveyDTO $DTO): string
     {
         if(!$DTO->question)
             throw new ValidationException("Survey question can not be empty");
@@ -38,8 +38,11 @@ class SurveyCreateService
         {
             $options[] = new Option(null, $option);
         }
+        
         $survey = new Survey(null, $DTO->question, $this->surveyGenerateCodeService->execute(self::$codeLenght), $options);
 
         $this->surveyRepo->save($survey);
+
+        return $survey->code;
     }
 }
