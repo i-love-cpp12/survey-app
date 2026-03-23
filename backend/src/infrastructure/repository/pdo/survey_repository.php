@@ -4,10 +4,12 @@ namespace app\infrastructure\repository\pdo;
 
 require_once(__DIR__ . "/../../../domain/repository/survey_repository.php");
 require_once(__DIR__ . "/../../../domain/entity/survey.php");
+require_once(__DIR__ . "/../mapper/option_mapper.php");
 
 use app\domain\entity\Option;
 use app\domain\entity\Survey;
 use app\domain\repository\SurveyRepository as SurveyRepositoryInterface;
+use app\infrastructure\repository\mapper\OptionMapper;
 use PDO;
 
 class SurveyRepository implements SurveyRepositoryInterface
@@ -100,8 +102,8 @@ class SurveyRepository implements SurveyRepositoryInterface
             {
                 $surveysRaw[$id]["options"][] = [
                     "option_id" => $row["option_id"],
-                    "value" => $row["option_value"],
-                    "votes" => $row["votes"],
+                    "option_value" => $row["option_value"],
+                    "option_votes" => $row["votes"],
                 ];
             }
         }
@@ -113,7 +115,7 @@ class SurveyRepository implements SurveyRepositoryInterface
             $options = [];
             foreach($surveyBody["options"] as $option)
             {
-                $options[] = new Option($option["option_id"], $option["value"], $option["votes"]);
+                $options[] = OptionMapper::map($option);
             }
             $surveys[] = new Survey($surveyId, $surveyBody["question"], $surveyBody["survey_code"], $options, boolval($surveyBody["is_active"]));
         }
@@ -125,7 +127,7 @@ class SurveyRepository implements SurveyRepositoryInterface
     {
         $code = strtoupper($code);
 
-        $stmt = $this->conn->prepare("SELECT `option`.option_id AS id, `option`.`value` AS _value, `option`.votes AS votes FROM `option` JOIN survey USING(survey_id) WHERE survey.survey_code = :code;");
+        $stmt = $this->conn->prepare("SELECT `option`.option_id AS id, `option`.`value` AS option_value, `option`.votes AS option_votes FROM `option` JOIN survey USING(survey_id) WHERE survey.survey_code = :code;");
 
         $stmt->execute(["code" => $code]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -134,7 +136,7 @@ class SurveyRepository implements SurveyRepositoryInterface
 
         foreach($data as $row)
         {
-            $result[] = new Option($row["id"], $row["_value"], $row["votes"]);
+            $result[] = OptionMapper::map($row);
         }
 
         return $result ?: null;
