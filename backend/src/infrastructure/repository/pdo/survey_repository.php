@@ -82,6 +82,34 @@ class SurveyRepository implements SurveyRepositoryInterface
             }
             return;
         }
+
+        $this->conn->beginTransaction();
+        try
+        {
+            $stmt = $this->conn->prepare("UPDATE survey SET survey_code = :code, question = :question, is_active = :active WHERE survey_id = :id;");
+            $stmt->execute(["code" => $survey->code, "question" => $survey->question, "active" => $survey->isActive, "id" => $survey->getId()]);
+            
+            foreach($survey->getOptions() as $option)
+            {
+                if($option->id !== null)
+                {
+                    $stmt = $this->conn->prepare("UPDATE `option` SET `value` = :option_value WHERE option_id = :id");
+                    $stmt->execute(["option_value" => $option->value, "id" => $option->id]);
+                }
+                else
+                {
+                    $stmt = $this->conn->prepare("INSERT INTO `option` (survey_id, `value`, votes) VALUES (:id, :option_value, :votes)");
+                    $stmt->execute(["id" => $survey->getId(), "option_value" => $option->value, "votes" => $option->getVotesCount()]);
+                }
+            }
+            $this->conn->commit();
+            
+        }
+        catch(PDOException $e)
+        {
+            $this->conn->rollBack();
+            throw $e;
+        }
     }
     
     public function findSurveyByCode(string $code): ?Survey
