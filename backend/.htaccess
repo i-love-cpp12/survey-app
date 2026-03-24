@@ -1,1 +1,2 @@
-Options -Indexes
+RewriteEngine On
+RewriteRule ^(.*)$ public/index.php [QSA,L]

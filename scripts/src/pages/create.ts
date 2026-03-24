@@ -1,6 +1,6 @@
 import { $ } from "../shared/selectors.js";
 import { requestPOST } from "../shared/request.js";
-import {GetSurveyInfoResponse } from "../shared/vote_module.js";
+import {CreateSurveyResponce, GetSurveyInfoResponse } from "../shared/vote_module.js";
 import { copyToClipboard } from "../shared/clipboard.js";
 import { goTo, homeDir} from "../shared/link.js";
 
@@ -71,15 +71,15 @@ async function onFormSubmit(e: Event, formElem: HTMLFormElement): Promise<void>
 
     const formData: FormCreateSurveyData = {question: questionElem.value, options: Array.from(optionElems).map((o) => o.value)};
 
-    const surveyData: GetSurveyInfoResponse | null = await requestPOST<GetSurveyInfoResponse>(homeDir + "backend/create_survey.php", formData);
+    const surveyData: CreateSurveyResponce | null = await requestPOST<CreateSurveyResponce>(homeDir + "backend/survey/create", formData);
 
     if(!surveyData)
     {
         goTo("index.html", {"error-title": "Something went wrong while creating survey", "error-content": "Try again later"})
         return;
     }
-    await copyToClipboard(surveyData.surveyInfo.surveyCode, questionElem);
-    goTo("index.html", {"code": surveyData.surveyInfo.surveyCode});
+    await copyToClipboard(surveyData.data.code, questionElem);
+    goTo("index.html", {"code": surveyData.data.code});
 }
 
 function refreshOptions(): void

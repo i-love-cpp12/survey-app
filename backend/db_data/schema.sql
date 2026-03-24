@@ -26,7 +26,8 @@ CREATE TABLE `option` (
   `option_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `survey_id` int(10) unsigned NOT NULL,
   `value` varchar(255) NOT NULL,
-  `time_stamp` datetime DEFAULT current_timestamp(),
+  `votes` int(10) unsigned NOT NULL DEFAULT 0,
+  `time_stamp` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`option_id`),
   KEY `survey_id_foreign_key` (`survey_id`),
   CONSTRAINT `survey_id_foreign_key` FOREIGN KEY (`survey_id`) REFERENCES `survey` (`survey_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -52,12 +53,12 @@ DROP TABLE IF EXISTS `survey`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `survey` (
   `survey_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `survey_code` varchar(25) UNIQUE NOT NULL,
-  `title` varchar(25) NOT NULL,
+  `survey_code` varchar(25) NOT NULL,
   `question` varchar(511) NOT NULL,
   `is_active` int(1) NOT NULL DEFAULT 1,
-  `time_stamp` datetime DEFAULT current_timestamp(),
+  `time_stamp` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`survey_id`),
+  UNIQUE KEY `survey_code` (`survey_code`),
   CONSTRAINT `is_survey_code_long_enough` CHECK (octet_length(`survey_code`) > 3),
   CONSTRAINT `is_question_not_empty` CHECK (`question` <> '')
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -83,7 +84,7 @@ CREATE TABLE `vote` (
   `vote_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `option_id` int(10) unsigned NOT NULL,
   `user_token` varchar(255) NOT NULL,
-  `time_stamp` datetime DEFAULT current_timestamp(),
+  `time_stamp` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`vote_id`),
   KEY `option_id_foreign_key` (`option_id`),
   CONSTRAINT `option_id_foreign_key` FOREIGN KEY (`option_id`) REFERENCES `option` (`option_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -108,4 +109,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-01-28 14:33:34
+-- Dump completed on 2026-03-18 14:00:37

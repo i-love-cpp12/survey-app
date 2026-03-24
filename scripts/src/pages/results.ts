@@ -6,7 +6,7 @@ import { goTo } from "../shared/link.js";
 //add code reading from url params 
 function render(surveyData: SurveyData, refreshRateMS: number = 2000): void
 {
-    ($("header nav button.copy span") as HTMLElement).innerText = surveyData.surveyCode; 
+    ($("header nav button.copy span") as HTMLElement).innerText = surveyData.code; 
     ($("section .title") as HTMLElement).innerText = surveyData.question;
 
     const optionContainerElem = $("section .options") as HTMLElement;

@@ -1,5 +1,5 @@
 import { $ } from "../shared/selectors.js";
-import { requestPOST, ResponseWithErrorField } from "../shared/request.js";
+import { requestPOST, requestGET, ResponseWithErrorField } from "../shared/request.js";
 import { goTo, homeDir } from "../shared/link.js";
 
 interface PopupError
@@ -9,7 +9,7 @@ interface PopupError
 }
 interface ValidateResponce extends ResponseWithErrorField
 {
-    isCodeOk: boolean,
+    data: {exists: boolean}
 }
 
 const showPopup = (() => {
@@ -44,13 +44,13 @@ async function onFormSubmit(e: Event | null, formElem: HTMLFormElement): Promise
         const formData = new FormData(formElem);
 
         const code = formData.get("survey-code")?.toString() ?? "";
-        console.log(homeDir + "backend/validate_survey_code.php");
+        console.log(homeDir + `backend/survey/${code}/exists`);
         const data: ValidateResponce | null =
-            await requestPOST<ValidateResponce>(homeDir + "backend/validate_survey_code.php", {surveyCode: code})
+            await requestGET<ValidateResponce>(homeDir + `backend/survey/${code.toUpperCase()}/exists`);
         
         if(data === null) throw new Error("Server error");
 
-        const isValid = data && data.error === "" && data.isCodeOk;
+        const isValid = data && data.error === "" && data.data.exists;
         
         isValid ? console.log(data) : console.error(data);
         console.log("is valid:", isValid);
