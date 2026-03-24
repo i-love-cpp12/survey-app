@@ -6,6 +6,7 @@ namespace app\interface\controler;
 require_once(__DIR__ . "/../../application/service/survey_get_by_code_service.php");
 require_once(__DIR__ . "/../../application/service/survey_get_results_service.php");
 require_once(__DIR__ . "/../../application/service/survey_create_service.php");
+require_once(__DIR__ . "/../../application/service/survey_code_exists_service.php");
 require_once(__DIR__ . "/../../infrastructure/http/respond.php");
 require_once(__DIR__ . "/../../infrastructure/http/request.php");
 require_once(__DIR__ . "/../../infrastructure/http/exception_handler.php");
@@ -18,6 +19,7 @@ use app\application\service\SurveyCreateService;
 use app\application\service\SurveyGetAllService;
 use app\application\service\SurveyGetByCodeService;
 use app\application\service\SurveyGetResultsService;
+use app\application\service\SurveyCodeExistsService;
 use app\domain\entity\Survey;
 use app\domain\entity\Option;
 use app\infrastructure\http\ExceptionHandler;
@@ -33,8 +35,27 @@ class SurveyControler
         private SurveyGetByCodeService $surveyGetByCodeService,
         private SurveyGetAllService $surveyGetAllService,
         private SurveyGetResultsService $surveyGetResultsService,
-        private SurveyCreateService $surveyCreateService){}
+        private SurveyCreateService $surveyCreateService,
+        private SurveyCodeExistsService $surveyCodeExistsService
+        ){}
 
+    public function codeExists(string $code): void
+    {
+        $exists = false;
+        try
+        {
+            $exists = $this->surveyCodeExistsService->execute($code);
+        }
+        catch(Throwable $e)
+        {
+            ExceptionHandler::handle($e);
+        }
+
+        Respond::json([
+            "error" => "",
+            "data" => ["exists" => $exists]
+        ]);
+    }
     public function getByCode(string $code): void
     {
         $survey = null;
