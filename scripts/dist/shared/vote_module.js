@@ -20,13 +20,14 @@ export function surveyDataEqualOpperator(s1, s2) {
     return true;
 }
 export async function getSurveyInfo(surveyCode) {
-    const data = await requestGET(homeDir + `backend/survey/${surveyCode}`);
+    const data = await requestGET(homeDir + `backend/survey/${surveyCode.toUpperCase()}`);
+    console.log(data);
     if (!data || data.error !== "")
         return null;
     return data.data;
 }
 async function vote(optionId, surveyCode) {
-    const data = await requestPOST(homeDir + `backend/${surveyCode}/vote`, {
+    const data = await requestPOST(homeDir + `backend/survey/${surveyCode.toUpperCase()}/vote`, {
         optionId: optionId
     });
     if (!data || data.error !== "")
@@ -34,7 +35,7 @@ async function vote(optionId, surveyCode) {
     return true;
 }
 async function hasVoted(surveyCode) {
-    const data = await requestGET(homeDir + `backend/${surveyCode}/voted`);
+    const data = await requestGET(homeDir + `backend/survey/${surveyCode.toUpperCase()}/voted`);
     if (!data || data.error !== "")
         return null;
     return data.data.hasVoted;

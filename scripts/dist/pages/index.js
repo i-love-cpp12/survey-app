@@ -22,8 +22,8 @@ async function onFormSubmit(e, formElem) {
     try {
         const formData = new FormData(formElem);
         const code = formData.get("survey-code")?.toString() ?? "";
-        console.log(homeDir + "backend/validate_survey_code.php");
-        const data = await requestGET(homeDir + `backend/survey/${code}/exists`);
+        console.log(homeDir + `backend/survey/${code}/exists`);
+        const data = await requestGET(homeDir + `backend/survey/${code.toUpperCase()}/exists`);
         if (data === null)
             throw new Error("Server error");
         const isValid = data && data.error === "" && data.data.exists;

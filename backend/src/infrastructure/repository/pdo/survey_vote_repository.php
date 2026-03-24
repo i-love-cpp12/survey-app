@@ -78,10 +78,9 @@ class SurveyVoteRepository implements VoteRepository
     {
         $token = $user->token->value;
 
-        $sql = "SELECT 1 FROM vote JOIN `option` USING(option_id) JOIN survey USING(survey_id) WHERE vote.user_token = ?;";
+        $sql = "SELECT 1 FROM vote JOIN `option` USING(option_id) JOIN survey USING(survey_id) WHERE vote.user_token = ? AND survey_code = ?;";
         $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$token]);
-        
+        $stmt->execute([$token, $surveyCode]);
         return boolval($stmt->fetchColumn());
     }
 }

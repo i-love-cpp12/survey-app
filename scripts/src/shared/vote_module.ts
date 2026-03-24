@@ -52,7 +52,8 @@ export function surveyDataEqualOpperator(s1: SurveyData, s2: SurveyData): boolea
 export async function getSurveyInfo(surveyCode: string): Promise<SurveyData | null>
 {
     const data: GetSurveyInfoResponse | null =
-        await requestGET<GetSurveyInfoResponse>(homeDir + `backend/survey/${surveyCode}`);
+        await requestGET<GetSurveyInfoResponse>(homeDir + `backend/survey/${surveyCode.toUpperCase()}`);
+    console.log(data);
     if(!data || data.error !== "") return null;
     return data.data;
 }
@@ -60,7 +61,7 @@ export async function getSurveyInfo(surveyCode: string): Promise<SurveyData | nu
 async function vote(optionId: number, surveyCode: string): Promise<boolean>
 {
     const data: VoteResponse | null =
-        await requestPOST<VoteResponse>(homeDir + `backend/${surveyCode}/vote`, {
+        await requestPOST<VoteResponse>(homeDir + `backend/survey/${surveyCode.toUpperCase()}/vote`, {
                 optionId: optionId
         });
     if(!data || data.error !== "") return false;
@@ -70,7 +71,7 @@ async function vote(optionId: number, surveyCode: string): Promise<boolean>
 async function hasVoted(surveyCode: string): Promise<boolean | null>
 {   
     const data: HasVotedResponse | null =
-        await requestGET<HasVotedResponse>(homeDir + `backend/${surveyCode}/voted`);
+        await requestGET<HasVotedResponse>(homeDir + `backend/survey/${surveyCode.toUpperCase()}/voted`);
     if(!data || data.error !== "") return null;
     return data.data.hasVoted;
 }

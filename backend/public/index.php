@@ -53,7 +53,7 @@ $voteRepository = new SurveyVoteRepository($PDOConnection);
 $surveyRepository = new SurveyRepository($PDOConnection);
 
 $voteService = new SurveyVoteService($surveyRepository, $voteRepository);
-$hasVotedService = new SurveyHasVotedService($voteRepository);
+$hasVotedService = new SurveyHasVotedService($voteRepository, $surveyRepository);
 $getByCodeService = new SurveyGetByCodeService($surveyRepository);
 $getAllService = new SurveyGetAllService($surveyRepository);
 $getResultsService = new SurveyGetResultsService($surveyRepository);
