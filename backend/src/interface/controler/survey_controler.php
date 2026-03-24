@@ -129,7 +129,7 @@ class SurveyControler
             ExceptionHandler::handle($e);
         }
 
-        Respond::json(["error" => "", "data" => ["survey_code" => $generatedCode]]);
+        Respond::json(["error" => "", "data" => ["code" => $generatedCode]]);
     }
     /** @param Option[] */
     private function optionsToPayload(array $options): array
@@ -149,15 +149,15 @@ class SurveyControler
     {
         $suveyEntity = [
             "id" => $survey->getId(),
-            "question" => $survey->question,
             "code" => $survey->code,
+            "question" => $survey->question,
             "isActive" => $survey->isActive
         ];
 
         $options = $this->optionsToPayload($survey->getOptions());
 
         return [
-            "survey" => $suveyEntity,
+            ...$suveyEntity,
             "options" => $options
         ];
     }

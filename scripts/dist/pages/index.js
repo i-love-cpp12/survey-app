@@ -1,5 +1,5 @@
 import { $ } from "../shared/selectors.js";
-import { requestPOST } from "../shared/request.js";
+import { requestGET } from "../shared/request.js";
 import { goTo, homeDir } from "../shared/link.js";
 const showPopup = (() => {
     let popupSetTimeOutId = null;
@@ -23,10 +23,10 @@ async function onFormSubmit(e, formElem) {
         const formData = new FormData(formElem);
         const code = formData.get("survey-code")?.toString() ?? "";
         console.log(homeDir + "backend/validate_survey_code.php");
-        const data = await requestPOST(homeDir + "backend/validate_survey_code.php", { surveyCode: code });
+        const data = await requestGET(homeDir + `backend/survey/${code}/exists`);
         if (data === null)
             throw new Error("Server error");
-        const isValid = data && data.error === "" && data.isCodeOk;
+        const isValid = data && data.error === "" && data.data.exists;
         isValid ? console.log(data) : console.error(data);
         console.log("is valid:", isValid);
         if (isValid) {

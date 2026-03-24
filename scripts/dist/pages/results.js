@@ -4,7 +4,7 @@ import { setIntervalNoDelay } from "../shared/set_interval.js";
 import { goTo } from "../shared/link.js";
 //add code reading from url params 
 function render(surveyData, refreshRateMS = 2000) {
-    $("header nav button.copy span").innerText = surveyData.surveyCode;
+    $("header nav button.copy span").innerText = surveyData.code;
     $("section .title").innerText = surveyData.question;
     const optionContainerElem = $("section .options");
     optionContainerElem.innerHTML = "";

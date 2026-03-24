@@ -1,7 +1,7 @@
 import { $ } from "../shared/selectors.js";
 import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
-import { requestPOST, ResponseWithErrorField } from "../shared/request.js";
+import { requestPOST, requestGET, ResponseWithErrorField } from "../shared/request.js";
 import { goTo, homeDir } from "./link.js";
 
 export interface SurveyOption
@@ -12,22 +12,23 @@ export interface SurveyOption
 }
 export interface SurveyData
 {
-    surveyId: number,
-    surveyCode: string,
+    id: number,
+    code: string,
     question: string,
     options: Array<SurveyOption>
 }
 export interface GetSurveyInfoResponse extends ResponseWithErrorField
 {
-    surveyInfo: SurveyData,
+    data: SurveyData,
 }
-interface VoteResponse extends ResponseWithErrorField
+export interface CreateSurveyResponce extends ResponseWithErrorField
 {
-    voted: boolean,
+    data: {code: string},
 }
+interface VoteResponse extends ResponseWithErrorField{}
 interface HasVotedResponse extends ResponseWithErrorField
 {
-    hasVoted: boolean,
+    data: {hasVoted: boolean}
 }
 export function surveyOptionEqualOpperator(o1: SurveyOption, o2: SurveyOption): boolean
 {
@@ -35,7 +36,7 @@ export function surveyOptionEqualOpperator(o1: SurveyOption, o2: SurveyOption): 
 }
 export function surveyDataEqualOpperator(s1: SurveyData, s2: SurveyData): boolean
 {
-    if(s1.surveyId !== s2.surveyId || s1.surveyCode !== s2.surveyCode || s1.question !== s2.question) return false;
+    if(s1.id !== s2.id || s1.code !== s2.code || s1.question !== s2.question) return false;
 
     for(let i = 0; i < s1.options.length || i < s2.options.length; i++)
     {
@@ -48,36 +49,35 @@ export function surveyDataEqualOpperator(s1: SurveyData, s2: SurveyData): boolea
     }
     return true;
 }
-export async function getSurveyInfo(code: string): Promise<SurveyData | null>
+export async function getSurveyInfo(surveyCode: string): Promise<SurveyData | null>
 {
     const data: GetSurveyInfoResponse | null =
-        await requestPOST<GetSurveyInfoResponse>(homeDir + "backend/get_survey_info.php", {surveyCode: code});
+        await requestGET<GetSurveyInfoResponse>(homeDir + `backend/survey/${surveyCode}`);
     if(!data || data.error !== "") return null;
-    return data.surveyInfo;
+    return data.data;
 }
 
 async function vote(optionId: number, surveyCode: string): Promise<boolean>
 {
     const data: VoteResponse | null =
-        await requestPOST<VoteResponse>(homeDir + "backend/vote.php", {
-                surveyCode: surveyCode,
+        await requestPOST<VoteResponse>(homeDir + `backend/${surveyCode}/vote`, {
                 optionId: optionId
         });
     if(!data || data.error !== "") return false;
-    return data.voted;
+    return true;
 }
 
 async function hasVoted(surveyCode: string): Promise<boolean | null>
 {   
     const data: HasVotedResponse | null =
-        await requestPOST<HasVotedResponse>(homeDir + "backend/has_voted.php", {surveyCode: surveyCode});
+        await requestGET<HasVotedResponse>(homeDir + `backend/${surveyCode}/voted`);
     if(!data || data.error !== "") return null;
-    return data.hasVoted;
+    return data.data.hasVoted;
 }
 
 function render(data: SurveyData)
 {
-    ($("header .copy span") as HTMLElement).innerText = data.surveyCode;
+    ($("header .copy span") as HTMLElement).innerText = data.code;
     ($("section > h2") as HTMLElement).innerText = data.question;
 
     const optionContainerElem = $("section .options") as HTMLElement;

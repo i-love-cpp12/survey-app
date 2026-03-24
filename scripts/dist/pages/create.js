@@ -46,13 +46,13 @@ async function onFormSubmit(e, formElem) {
     if (!isValid)
         return;
     const formData = { question: questionElem.value, options: Array.from(optionElems).map((o) => o.value) };
-    const surveyData = await requestPOST(homeDir + "backend/create_survey.php", formData);
+    const surveyData = await requestPOST(homeDir + "backend/survey/create", formData);
     if (!surveyData) {
         goTo("index.html", { "error-title": "Something went wrong while creating survey", "error-content": "Try again later" });
         return;
     }
-    await copyToClipboard(surveyData.surveyInfo.surveyCode, questionElem);
-    goTo("index.html", { "code": surveyData.surveyInfo.surveyCode });
+    await copyToClipboard(surveyData.data.code, questionElem);
+    goTo("index.html", { "code": surveyData.data.code });
 }
 function refreshOptions() {
     const optionConatiner = $(".options");

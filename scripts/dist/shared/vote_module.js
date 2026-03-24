@@ -1,13 +1,13 @@
 import { $ } from "../shared/selectors.js";
 import { copyIcon, copiedIcon } from "../data/icons.js";
 import { copyToClipboard } from "../shared/clipboard.js";
-import { requestPOST } from "../shared/request.js";
+import { requestPOST, requestGET } from "../shared/request.js";
 import { goTo, homeDir } from "./link.js";
 export function surveyOptionEqualOpperator(o1, o2) {
     return o1.id === o2.id && o1.value === o2.value && o1.votesCount === o2.votesCount;
 }
 export function surveyDataEqualOpperator(s1, s2) {
-    if (s1.surveyId !== s2.surveyId || s1.surveyCode !== s2.surveyCode || s1.question !== s2.question)
+    if (s1.id !== s2.id || s1.code !== s2.code || s1.question !== s2.question)
         return false;
     for (let i = 0; i < s1.options.length || i < s2.options.length; i++) {
         const s1Option = s1.options[i];
@@ -19,29 +19,28 @@ export function surveyDataEqualOpperator(s1, s2) {
     }
     return true;
 }
-export async function getSurveyInfo(code) {
-    const data = await requestPOST(homeDir + "backend/get_survey_info.php", { surveyCode: code });
+export async function getSurveyInfo(surveyCode) {
+    const data = await requestGET(homeDir + `backend/survey/${surveyCode}`);
     if (!data || data.error !== "")
         return null;
-    return data.surveyInfo;
+    return data.data;
 }
 async function vote(optionId, surveyCode) {
-    const data = await requestPOST(homeDir + "backend/vote.php", {
-        surveyCode: surveyCode,
+    const data = await requestPOST(homeDir + `backend/${surveyCode}/vote`, {
         optionId: optionId
     });
     if (!data || data.error !== "")
         return false;
-    return data.voted;
+    return true;
 }
 async function hasVoted(surveyCode) {
-    const data = await requestPOST(homeDir + "backend/has_voted.php", { surveyCode: surveyCode });
+    const data = await requestGET(homeDir + `backend/${surveyCode}/voted`);
     if (!data || data.error !== "")
         return null;
-    return data.hasVoted;
+    return data.data.hasVoted;
 }
 function render(data) {
-    $("header .copy span").innerText = data.surveyCode;
+    $("header .copy span").innerText = data.code;
     $("section > h2").innerText = data.question;
     const optionContainerElem = $("section .options");
     optionContainerElem.innerHTML = "";
